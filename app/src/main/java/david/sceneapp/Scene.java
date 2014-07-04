@@ -13,6 +13,9 @@ import android.util.Log;
  * Created by david on 7/1/14.
  */
 public class Scene {
+    private int id;
+    private String name;
+
     private int alarmVolume = -1;
     private int musicVolume = -1;
     private int voiceCallVolume = -1;
@@ -68,6 +71,21 @@ public class Scene {
         return ring;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public void implement(Context context) {
 

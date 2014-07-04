@@ -15,16 +15,31 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class LALALAService extends NotificationListenerService {
     public static LALALAService currentInstance;
     public static final String ACTION_GET_NOTIFICATION = "david.notification";
     public static final String KEY_NOTIF_PKG_NAME = "notification_packagename";
+    public static final String ACTION_CLICK_NOTIFICATION = "com.gaowei.notif";
     private RemoteViews remoteViews;
     private boolean clicked = false;
     private static final int NOTIFICATION_ID = 100;
     NotificationManager mNotificationManager;
+
+    private ArrayList<Scene> scenes = new ArrayList<Scene>();
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if(action.equals(ACTION_CLICK_NOTIFICATION)) {
+                Toast.makeText(LALALAService.this, "hahaha", Toast.LENGTH_SHORT).show();
+                toggleButton();
+            }
+        }
+    };
 
 
     private String TAG = this.getClass().getSimpleName();
@@ -42,15 +57,19 @@ public class LALALAService extends NotificationListenerService {
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
         addRemoteView();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_CLICK_NOTIFICATION);
+        registerReceiver(receiver, filter);
     }
 
     public void toggleButton() {
         remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
         if(clicked) {
-            remoteViews.setInt(R.id.button1, "setBackground", android.R.color.holo_red_dark);
+            remoteViews.setInt(R.id.button1, "setBackgroundResource", android.R.color.holo_red_dark);
 
         } else {
-            remoteViews.setInt(R.id.button1, "setBackground", android.R.color.darker_gray);
+            remoteViews.setInt(R.id.button1, "setBackgroundResource", android.R.color.holo_blue_bright);
 
         }
         clicked = !clicked;
@@ -59,28 +78,15 @@ public class LALALAService extends NotificationListenerService {
 
 
     private void addRemoteView() {
-
+//        remoteViews.setInt(R.id.button1, "setBackground", android.R.color.holo_red_dark);
+        remoteViews.
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                 this).setSmallIcon(R.drawable.ic_launcher).setContent(
                 remoteViews).setOngoing(true);
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, NotificationHandlerActivity.class);
-        resultIntent.putExtra("button",1);
-        // The stack builder object will contain an artificial back stack for
-        // the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(WifiActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent = stackBuilder.getPendingIntent(0,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        remoteViews.setOnClickPendingIntent(R.id.button1, resultPendingIntent);
-
-        // mId allows you to update the notification later on.
+        Intent resultIntent = new Intent();
+        resultIntent.setAction(ACTION_CLICK_NOTIFICATION);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 123, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        remoteViews.setOnClickPendingIntent(R.id.button1, pendingIntent);
         mNotificationManager.notify(NOTIFICATION_ID, mBuilder.build());
 
     }

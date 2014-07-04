@@ -5,20 +5,4 @@
     android:gravity="center"
     android:orientation="horizontal" >
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="silent"
-        android:id="@+id/button1"
-        android:background="@android:color/holo_red_dark"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="noisy"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="middle"/>
 </LinearLayout>
