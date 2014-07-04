@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".WifiActivity" >
+
+    <item
+        android:id="@+id/action_connection_info"
+        android:title="Connection Info"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_volume_info"
+        android:title="Volume Info"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_start_service"
+        android:title="Start Service"
+        app:showAsAction="always" />
+</menu>
