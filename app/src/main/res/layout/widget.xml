@@ -3,6 +3,35 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:gravity="center"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:id="@+id/buttonContainer">
+
+    <Button android:id="@+id/sceneButton1"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="Unknown"/>
+
+    <Button android:id="@+id/sceneButton2"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="Unknown"/>
+
+    <Button android:id="@+id/sceneButton3"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="Unknown"/>
+
+    <Button android:id="@+id/sceneButton4"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="6dp"
+        android:text="Unknown"/>
 
 </LinearLayout>

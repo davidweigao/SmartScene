@@ -11,7 +11,6 @@ public class NotificationHandlerActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         switch(getIntent().getIntExtra("button",-1)) {
-            case 1: LALALAService.currentInstance.toggleButton();
         }
         finish();
     }

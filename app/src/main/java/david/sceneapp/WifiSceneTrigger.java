@@ -19,6 +19,7 @@ public class WifiSceneTrigger implements SceneTrigger {
     private Scene scene;
     private String wifiSSID;
     private Context activateContext;
+    private SceneTriggerExtraAction extraAction;
 
     public WifiSceneTrigger(Scene scene, Context context, String wifiSSID) {
         this.scene = scene;
@@ -58,6 +59,11 @@ public class WifiSceneTrigger implements SceneTrigger {
 
 
     @Override
+    public Scene getScene() {
+        return scene;
+    }
+
+    @Override
     public boolean isQualified() {
         boolean retval = false;
         if(currentWifiInfo.getSSID().equals(wifiSSID)) {
@@ -77,5 +83,15 @@ public class WifiSceneTrigger implements SceneTrigger {
     @Override
     public void deactivate() {
         activateContext.unregisterReceiver(receiver);
+    }
+
+    @Override
+    public SceneTriggerExtraAction getExtraAction() {
+        return extraAction;
+    }
+
+    @Override
+    public void setExtraAction(SceneTriggerExtraAction extraAction) {
+        this.extraAction = extraAction;
     }
 }

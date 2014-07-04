@@ -96,9 +96,9 @@ public class Scene {
             return;
         }
 
-        if (alarmVolume != -1) am.setStreamVolume(AudioManager.STREAM_ALARM, alarmVolume, AudioManager.FLAG_SHOW_UI);
-        if (musicVolume != -1) am.setStreamVolume(AudioManager.STREAM_MUSIC, musicVolume, AudioManager.FLAG_SHOW_UI);
-        if (systemVolume != -1) am.setStreamVolume(AudioManager.STREAM_SYSTEM, systemVolume, AudioManager.FLAG_SHOW_UI);
+        if (alarmVolume != -1) am.setStreamVolume(AudioManager.STREAM_ALARM, alarmVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        if (musicVolume != -1) am.setStreamVolume(AudioManager.STREAM_MUSIC, musicVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+        if (systemVolume != -1) am.setStreamVolume(AudioManager.STREAM_SYSTEM, systemVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (voiceCallVolume != -1)
             am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, voiceCallVolume, 0);
 

@@ -18,6 +18,7 @@ public class NotificationSceneTrigger implements SceneTrigger {
     private Context activateContext;
     private Set<String> pkgNames = new HashSet<String>();
     private Scene scene;
+    private SceneTriggerExtraAction extraAction;
 
     public NotificationSceneTrigger(Context activateContext, Scene scene, Set<String> pkgNames) {
         this.activateContext = activateContext;
@@ -35,11 +36,18 @@ public class NotificationSceneTrigger implements SceneTrigger {
                     Toast.makeText(context, pkgName, Toast.LENGTH_SHORT).show();
                     if(isQualified()) {
                         scene.implement(context);
+                        if(extraAction != null)
+                            extraAction.action();
                     }
                 }
             }
         }
     };
+
+    @Override
+    public Scene getScene() {
+        return scene;
+    }
 
     @Override
     public boolean isQualified() {
@@ -57,4 +65,15 @@ public class NotificationSceneTrigger implements SceneTrigger {
     public void deactivate() {
         activateContext.unregisterReceiver(receiver);
     }
+
+    @Override
+    public SceneTriggerExtraAction getExtraAction() {
+        return extraAction;
+    }
+
+    @Override
+    public void setExtraAction(SceneTriggerExtraAction extraAction) {
+        this.extraAction = extraAction;
+    }
+
 }
