@@ -64,10 +64,20 @@ public class LALALAService extends NotificationListenerService {
         super.onCreate();
         currentInstance = this;
 
-        scenes.add(getDemoSilentMode());
-        scenes.add(getDemoSoundMode());
-        scenes.add(getDemoMiddleMode());
-        scenes.add(getDemoSilentMode2());
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        ssm.dumpAll();
+        if(ssm.getAllScene().isEmpty()) {
+            ssm.saveScene(getDemoSilentMode());
+            ssm.saveScene(getDemoSoundMode());
+            ssm.saveScene(getDemoMiddleMode());
+            ssm.saveScene(getDemoSilentMode2());
+        }
+        scenes.addAll(ssm.getAllScene());
+
+//        scenes.add(getDemoSilentMode());
+//        scenes.add(getDemoSoundMode());
+//        scenes.add(getDemoMiddleMode());
+//        scenes.add(getDemoSilentMode2());
 
         WifiSceneTrigger trigger = new WifiSceneTrigger(scenes.get(0),this,"\"nmagic2\"");
         //trigger.activate();
@@ -77,7 +87,7 @@ public class LALALAService extends NotificationListenerService {
         //trigger1.activate();
 
         triggers.add(trigger);
-        triggers.add(trigger1);
+//        triggers.add(trigger1);
 
         for(final SceneTrigger t : triggers) {
             t.activate();
@@ -153,6 +163,7 @@ public class LALALAService extends NotificationListenerService {
         ss.setVibrate(true);
         ss.setName("silent");
         ss.setId(1);
+        ss.setRingerMode(AudioManager.RINGER_MODE_SILENT);
         return ss;
     }
 
@@ -163,6 +174,7 @@ public class LALALAService extends NotificationListenerService {
         ss.setRing(true);
         ss.setName("sound");
         ss.setId(2);
+        ss.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
         return ss;
     }
 

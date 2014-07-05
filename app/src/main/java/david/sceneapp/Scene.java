@@ -20,6 +20,7 @@ public class Scene {
     private int musicVolume = -1;
     private int voiceCallVolume = -1;
     private int systemVolume = -1;
+    private int ringerMode = -1;
     private boolean vibrate;
     private boolean ring;
 
@@ -71,6 +72,14 @@ public class Scene {
         return ring;
     }
 
+    public int getRingerMode() {
+        return ringerMode;
+    }
+
+    public void setRingerMode(int ringerMode) {
+        this.ringerMode = ringerMode;
+    }
+
     public int getId() {
         return id;
     }
@@ -101,6 +110,7 @@ public class Scene {
         if (systemVolume != -1) am.setStreamVolume(AudioManager.STREAM_SYSTEM, systemVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (voiceCallVolume != -1)
             am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, voiceCallVolume, 0);
+        if(ringerMode != -1) am.setRingerMode(ringerMode);
 
         if (vibrate) {
             Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
