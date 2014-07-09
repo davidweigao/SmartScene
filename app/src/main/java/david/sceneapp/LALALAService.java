@@ -8,6 +8,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
@@ -17,6 +19,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -63,6 +66,8 @@ public class LALALAService extends NotificationListenerService {
     public void onCreate() {
         super.onCreate();
         currentInstance = this;
+
+
 
         SceneStorageManager ssm = new SceneStorageManager(this);
         ssm.dumpAll();
