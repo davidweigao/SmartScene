@@ -66,12 +66,22 @@ public class SceneStorageManager {
         if(scenesJson != null) {
             triggers = new Gson().fromJson(scenesJson, triggers.getClass());
         }
+        int maxId = 0;
+        Map<Integer, SceneTriggerData> allTrigger = getAllTrigger();
+        for(SceneTriggerData std : allTrigger.values()) {
+            if(std.getId() > maxId) {
+                maxId = std.getId();
+            }
+        }
+        maxId++;
+        triggerData.setId(maxId);
         triggers.add(new Gson().toJson(triggerData));
         // update data
         String newTriggersJson = new Gson().toJson(triggers);
         final SharedPreferences.Editor editor = sp.edit();
         editor.putString(KEY_ALL_TRIGGER, newTriggersJson);
         editor.commit();
+        LALALAService.currentInstance.updateTriggers();
     }
 
     public Map<Integer, SceneTriggerData> getAllTrigger() {

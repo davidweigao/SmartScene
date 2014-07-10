@@ -13,5 +13,8 @@
     <string name="enable_wifi_switch">Enable Wifi Switch</string>
     <string name="wifi_switch_edit">Wifi Switch Edit</string>
     <string name="title_activity_wifi_trigger_list">WifiTriggerListActivity</string>
+    <string name="title_activity_add_trigger_option">AddTriggerOptionActivity</string>
+    <string name="title_activity_add_wifi_trigger">AddWifiTriggerActivity</string>
+    <string name="title_activity_add_wifi_trigger_activity2">AddWifiTriggerActivity2</string>
 
 </resources>

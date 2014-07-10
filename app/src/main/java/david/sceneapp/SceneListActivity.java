@@ -92,6 +92,8 @@ public class SceneListActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if(id == R.id.wifi_switch_edit) {
+            startActivity(new Intent(SceneListActivity.this, TriggerListActivity.class));
         }
         return super.onOptionsItemSelected(item);
     }

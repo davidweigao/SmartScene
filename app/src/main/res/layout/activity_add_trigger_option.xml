@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="david.sceneapp.AddTriggerOptionActivity">
+
+    <Button
+        android:id="@+id/wifiTriggerBT"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Enter WifiArea Trigger"
+        android:layout_marginLeft="-6dp"
+        android:layout_marginRight="-6dp"/>
+
+    <Button
+        android:id="@+id/notificationTriggerBT"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Get Notification Trigger"
+        android:layout_marginLeft="-6dp"
+        android:layout_marginRight="-6dp"/>
+
+</LinearLayout>

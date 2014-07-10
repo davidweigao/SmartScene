@@ -48,8 +48,12 @@ public class LALALAService extends NotificationListenerService {
     public static boolean wifiEnabled = false;
 
 
-    private ArrayList<Scene> scenes = new ArrayList<Scene>();
+    private  ArrayList<Scene> scenes = new ArrayList<Scene>();
     private Map<Integer, Scene> sceneMap = new HashMap<Integer, Scene>();
+
+    public ArrayList<Scene> getScenes() {
+        return scenes;
+    }
 
     static Scene currentScene = null;
     private Map<Integer, SceneTrigger> triggers = new HashMap<Integer,SceneTrigger>();
@@ -91,36 +95,26 @@ public class LALALAService extends NotificationListenerService {
         scenes.addAll(sceneMap.values());
 
 //        WifiSceneTrigger trigger = new WifiSceneTrigger(scenes.get(0),this,"\"superluyouqi-5G\"");
-        SceneTriggerData triggerData = new SceneTriggerData();
-        triggerData.setTriggerType(SceneTriggerData.TYPE_WIFI_SWITCH);
-        triggerData.setSceneId(scenes.get(0).getId());
-        triggerData.setParameters(new String[]{"\"superluyouqi-5G\""});
-        triggerData.setId(0);
-        //trigger.activate();
+//        SceneTriggerData triggerData = new SceneTriggerData();
+//        triggerData.setTriggerType(SceneTriggerData.TYPE_WIFI_SWITCH);
+//        triggerData.setSceneId(scenes.get(0).getId());
+//        triggerData.setParameters(new String[]{"\"superluyouqi-5G\""});
+//        triggerData.setId(0);
+//        triggerData.setName(triggerData.getParameters()[0]);
+//        //trigger.activate();
+//
+//        SceneTriggerData triggerData2 = new SceneTriggerData();
+//        triggerData2.setTriggerType(SceneTriggerData.TYPE_NOTIFICATION);
+//        triggerData2.setSceneId(scenes.get(1).getId());
+//        triggerData2.setParameters(new String[]{"com.immomo.momo"});
+//        triggerData.setId(1);
+//        triggerData2.setName("lalala");
+//        //trigger1.activate();
+//
+//        ssm.saveTrigger(triggerData);
+//        ssm.saveTrigger(triggerData2);
 
-        SceneTriggerData triggerData2 = new SceneTriggerData();
-        triggerData2.setTriggerType(SceneTriggerData.TYPE_NOTIFICATION);
-        triggerData2.setSceneId(scenes.get(1).getId());
-        triggerData2.setParameters(new String[]{"com.immomo.momo"});
-        triggerData.setId(1);
-        //trigger1.activate();
-
-        ssm.saveTrigger(triggerData);
-        ssm.saveTrigger(triggerData2);
-
-        Map<Integer, SceneTriggerData> triggerDatas = ssm.getAllTrigger();
-        for(SceneTriggerData st : triggerDatas.values()) {
-            switch (st.getTriggerType()) {
-                case SceneTriggerData.TYPE_WIFI_SWITCH:
-                    triggers.put(st.getId(), new WifiSceneTrigger(sceneMap.get(st.getSceneId()), this, st.getParameters()[0]));
-                    break;
-                case SceneTriggerData.TYPE_NOTIFICATION:
-                    Set<String> pkgs = new HashSet<String>();
-                    pkgs.add(st.getParameters()[0]);
-                    triggers.put(st.getId(), new NotificationSceneTrigger(this, sceneMap.get(st.getSceneId()), pkgs));
-                    break;
-            }
-        }
+        updateTriggers();
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
@@ -132,6 +126,23 @@ public class LALALAService extends NotificationListenerService {
         registerReceiver(receiver, filter);
 
 
+    }
+
+    void updateTriggers() {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        Map<Integer, SceneTriggerData> triggerDatas = ssm.getAllTrigger();
+        for (SceneTriggerData st : triggerDatas.values()) {
+            switch (st.getTriggerType()) {
+                case SceneTriggerData.TYPE_WIFI_SWITCH:
+                    triggers.put(st.getId(), new WifiSceneTrigger(sceneMap.get(st.getSceneId()), this, st.getParameters()[0]));
+                    break;
+                case SceneTriggerData.TYPE_NOTIFICATION:
+                    Set<String> pkgs = new HashSet<String>();
+                    pkgs.add(st.getParameters()[0]);
+                    triggers.put(st.getId(), new NotificationSceneTrigger(this, sceneMap.get(st.getSceneId()), pkgs));
+                    break;
+            }
+        }
     }
 
     private void addRemoteView() {

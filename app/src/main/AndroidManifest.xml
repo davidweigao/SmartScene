@@ -46,8 +46,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WifiTriggerListActivity"
+            android:name=".TriggerListActivity"
             android:label="@string/title_activity_wifi_trigger_list" >
+        </activity>
+        <activity
+            android:name=".AddTriggerOptionActivity"
+            android:label="@string/title_activity_add_trigger_option" >
+        </activity>
+        <activity
+            android:name=".AddWifiTriggerActivity"
+            android:label="@string/title_activity_add_wifi_trigger" >
+        </activity>
+        <activity
+            android:name=".AddWifiTriggerActivity2"
+            android:label="@string/title_activity_add_wifi_trigger_activity2" >
         </activity>
     </application>
 
