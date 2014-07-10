@@ -6,8 +6,12 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_my">MyActivity</string>
     <string name="title_activity_app_list">AppListActivity</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section1">Suggestion</string>
+    <string name="title_section2">Non-System</string>
+    <string name="title_section3">All</string>
+    <string name="title_activity_scene_list">SceneListActivity</string>
+    <string name="enable_wifi_switch">Enable Wifi Switch</string>
+    <string name="wifi_switch_edit">Wifi Switch Edit</string>
+    <string name="title_activity_wifi_trigger_list">WifiTriggerListActivity</string>
 
 </resources>

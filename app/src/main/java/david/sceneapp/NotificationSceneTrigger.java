@@ -35,7 +35,7 @@ public class NotificationSceneTrigger implements SceneTrigger {
                 if(pkgNames.contains(pkgName)) {
                     Toast.makeText(context, pkgName, Toast.LENGTH_SHORT).show();
                     if(isQualified()) {
-                        scene.implement(context);
+                        LALALAService.currentInstance.implementScene(scene);
                         if(extraAction != null)
                             extraAction.action();
                     }
