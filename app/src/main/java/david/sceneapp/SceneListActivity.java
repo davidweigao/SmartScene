@@ -30,23 +30,16 @@ public class SceneListActivity extends Activity {
 
     Map<Integer, Scene> sceneMap = new HashMap<Integer, Scene>();
     int selectedSceneIndex = -1;
+    ListView listView;
+    SceneArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        startService(new Intent(this, LALALAService.class));
-
         setContentView(R.layout.activity_scene_list);
-        final ListView listView = (ListView) findViewById(R.id.listView);
-        SceneStorageManager ssm = new SceneStorageManager(this);
-        List<Object> objects = new ArrayList<Object>();
-        objects.add(new Object());
-        sceneMap = ssm.getAllScene();
+        listView = (ListView) findViewById(R.id.listView);
+        //updateList();
 
-        objects.addAll(sceneMap.values());
-        final SceneArrayAdapter adapter = new SceneArrayAdapter(this, R.layout.list_item_scene, objects);
-        listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -59,22 +52,44 @@ public class SceneListActivity extends Activity {
 
 
         IntentFilter filter = new IntentFilter(LALALAService.ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(LALALAService.ACTION_SCENES_UPDATED);
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                int id = intent.getIntExtra(LALALAService.EXTRA_SCENE_ID, -1);
-                if(id != -1) {
-                    Scene s = sceneMap.get(id);
-                    int position = adapter.getPosition(s);
-                    selectedSceneIndex = position;
-                    adapter.notifyDataSetInvalidated();
+                if(intent.getAction().equals(LALALAService.ACTION_SCENE_IMPLEMENTED)) {
+                    int id = intent.getIntExtra(LALALAService.EXTRA_SCENE_ID, -1);
+                    if(id != -1) {
+                        Scene s = sceneMap.get(id);
+                        int position = adapter.getPosition(s);
+                        selectedSceneIndex = position;
+                        adapter.notifyDataSetInvalidated();
+                    }
+                } else if(intent.getAction().equals(LALALAService.ACTION_SCENES_UPDATED)) {
+                    updateList();
+                    adapter.notifyDataSetChanged();
                 }
+
             }
         };
         this.registerReceiver(receiver, filter);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(LALALAService.currentInstance != null)
+            LALALAService.currentInstance.updateScenes();
+    }
 
+    private void updateList() {
+        List<Object> objects = new ArrayList<Object>();
+        objects.add(new Object());
+        sceneMap = LALALAService.currentInstance.getSceneMap();
+
+        objects.addAll(sceneMap.values());
+        adapter = new SceneArrayAdapter(this, R.layout.list_item_scene, objects);
+        listView.setAdapter(adapter);
+    }
 
 
     @Override
@@ -90,8 +105,8 @@ public class SceneListActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_add) {
+            startActivity(new Intent(SceneListActivity.this, AddSceneActivity.class));
         } else if(id == R.id.wifi_switch_edit) {
             startActivity(new Intent(SceneListActivity.this, TriggerListActivity.class));
         }
@@ -102,7 +117,6 @@ public class SceneListActivity extends Activity {
 
 
     private class SceneArrayAdapter extends ArrayAdapter<Object> {
-
         LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         public SceneArrayAdapter(Context context, int resource, List<Object> objects) {
@@ -139,7 +153,6 @@ public class SceneListActivity extends Activity {
             ctv.setChecked(selectedSceneIndex == position ? true : false);
             return convertView;
         }
-
 
     }
 

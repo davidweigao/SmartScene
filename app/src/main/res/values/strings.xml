@@ -16,5 +16,15 @@
     <string name="title_activity_add_trigger_option">AddTriggerOptionActivity</string>
     <string name="title_activity_add_wifi_trigger">AddWifiTriggerActivity</string>
     <string name="title_activity_add_wifi_trigger_activity2">AddWifiTriggerActivity2</string>
+    <string name="title_activity_add_scene">AddSceneActivity</string>
+    <string name="ringer_mode_prompt">Choose ringer mode</string>
+
+    <string-array name="ringer_mode_arrays">
+        <item>Silence</item>
+        <item>Vibrate</item>
+        <item>Normal</item>
+    </string-array>
+
+    <string name="title_activity_add_scene_activity2">AddSceneActivity2</string>
 
 </resources>

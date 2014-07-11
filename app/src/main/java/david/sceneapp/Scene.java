@@ -23,18 +23,7 @@ public class Scene {
     private int voiceCallVolume = -1;
     private int systemVolume = -1;
     private int ringerMode = -1;
-    private boolean vibrate;
-    private boolean ring;
 
-
-
-    public void setVibrate(boolean vibrate) {
-        this.vibrate = vibrate;
-    }
-
-    public void setRing(boolean ring) {
-        this.ring = ring;
-    }
 
     public void setSystemVolume(int systemVolume) {
         this.systemVolume = systemVolume;
@@ -68,14 +57,6 @@ public class Scene {
         return systemVolume;
     }
 
-    public boolean isVibrate() {
-        return vibrate;
-    }
-
-    public boolean isRing() {
-        return ring;
-    }
-
     public int getRingerMode() {
         return ringerMode;
     }
@@ -100,44 +81,4 @@ public class Scene {
         this.name = name;
     }
 
-
-
-//    public void implement(Context context) {
-//
-//        AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-//
-//        if (am == null) {
-//            Log.e("SoundScene", "manager is null");
-//            return;
-//        }
-//
-//        if (alarmVolume != -1) am.setStreamVolume(AudioManager.STREAM_ALARM, alarmVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-//        if (musicVolume != -1) am.setStreamVolume(AudioManager.STREAM_MUSIC, musicVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-//        if (systemVolume != -1) am.setStreamVolume(AudioManager.STREAM_SYSTEM, systemVolume, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-//        if (voiceCallVolume != -1)
-//            am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, voiceCallVolume, 0);
-//        if(ringerMode != -1) am.setRingerMode(ringerMode);
-//
-//        if (vibrate) {
-//            Vibrator v = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
-//            v.vibrate(500);
-//        }
-//
-//        if(ring) {
-//            try {
-//                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-//                Ringtone r = RingtoneManager.getRingtone(context, notification);
-//                r.play();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//
-//        Intent intent = new Intent(SCENE_IMPLEMENTED_ACTION);
-//        intent.putExtra(EXTRA_SCENE_ID, id);
-//        context.sendBroadcast(intent);
-//
-//
-//
-//    }
 }

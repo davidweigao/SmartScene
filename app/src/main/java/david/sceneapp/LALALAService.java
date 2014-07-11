@@ -36,6 +36,8 @@ public class LALALAService extends NotificationListenerService {
     static final String KEY_NOTIF_PKG_NAME = "notification_packagename";
     static final String ACTION_CLICK_NOTIFICATION = "com.gaowei.notif";
     static final String ACTION_SCENE_IMPLEMENTED = "com.david.sceneImplemented";
+    static final String ACTION_SCENES_UPDATED = "com.david.sceneUpdated";
+    static final String ACTION_TRIGGERS_UPDATED = "com.david.triggerUpdated";
     static final String EXTRA_SCENE_INDEX = "scene_index";
     static final String EXTRA_FROM_TRIGGER = "from_trigger";
     static final String EXTRA_SCENE_ID = "com.david.extraSceneId";
@@ -53,6 +55,10 @@ public class LALALAService extends NotificationListenerService {
 
     public ArrayList<Scene> getScenes() {
         return scenes;
+    }
+
+    public Map<Integer, Scene> getSceneMap() {
+        return sceneMap;
     }
 
     static Scene currentScene = null;
@@ -83,16 +89,16 @@ public class LALALAService extends NotificationListenerService {
 
 
 
-        SceneStorageManager ssm = new SceneStorageManager(this);
-        ssm.dumpAll();
-        if(ssm.getAllScene().isEmpty()) {
-            ssm.saveScene(getDemoSilentMode());
-            ssm.saveScene(getDemoSoundMode());
-            ssm.saveScene(getDemoMiddleMode());
-            ssm.saveScene(getDemoSilentMode2());
-        }
-        sceneMap = ssm.getAllScene();
-        scenes.addAll(sceneMap.values());
+//        SceneStorageManager ssm = new SceneStorageManager(this);
+//        ssm.dumpAll();
+//        if(ssm.getAllScene().isEmpty()) {
+//            ssm.saveScene(getDemoSilentMode());
+//            ssm.saveScene(getDemoSoundMode());
+//            ssm.saveScene(getDemoMiddleMode());
+//            ssm.saveScene(getDemoSilentMode2());
+//        }
+//        sceneMap = ssm.getAllScene();
+//        scenes.addAll(sceneMap.values());
 
 //        WifiSceneTrigger trigger = new WifiSceneTrigger(scenes.get(0),this,"\"superluyouqi-5G\"");
 //        SceneTriggerData triggerData = new SceneTriggerData();
@@ -114,6 +120,7 @@ public class LALALAService extends NotificationListenerService {
 //        ssm.saveTrigger(triggerData);
 //        ssm.saveTrigger(triggerData2);
 
+        updateScenes();
         updateTriggers();
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -143,7 +150,18 @@ public class LALALAService extends NotificationListenerService {
                     break;
             }
         }
+        sendBroadcast(new Intent(ACTION_TRIGGERS_UPDATED));
+
     }
+
+    void updateScenes() {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        sceneMap = ssm.getAllScene();
+        scenes.addAll(sceneMap.values());
+        sendBroadcast(new Intent(ACTION_SCENES_UPDATED));
+    }
+
+
 
     private void addRemoteView() {
         if(scenes.isEmpty()) return;
@@ -205,30 +223,49 @@ public class LALALAService extends NotificationListenerService {
             return;
         }
 
+        int alarm = 0;
+        int music = 1;
+        int sys = 2;
+
+        int max = scene.getAlarmVolume();
+        int maxOne = alarm;
+        if(scene.getMusicVolume() > max) {
+            max = scene.getMusicVolume();
+            maxOne = music;
+        }
+        if(scene.getSystemVolume() > max) {
+            max = scene.getSystemVolume();
+            maxOne = sys;
+        }
+
+        int theFlag = AudioManager.FLAG_PLAY_SOUND;
+        if(scene.getSystemVolume() + scene.getMusicVolume() + scene.getSystemVolume() == 0)
+            theFlag = AudioManager.FLAG_VIBRATE;
+
         if (scene.getAlarmVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_ALARM, scene.getAlarmVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_ALARM, scene.getAlarmVolume(), maxOne == alarm ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getMusicVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_MUSIC, scene.getMusicVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, scene.getMusicVolume(), maxOne == music ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getSystemVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_SYSTEM, scene.getSystemVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_SYSTEM, scene.getSystemVolume(), maxOne == sys ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getVoiceCallVolume() != -1)
             am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, scene.getVoiceCallVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if(scene.getRingerMode() != -1) am.setRingerMode(scene.getRingerMode());
 
-        if (scene.isVibrate()) {
-            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-            v.vibrate(500);
-        }
-
-        if(scene.isRing()) {
-            try {
-                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                Ringtone r = RingtoneManager.getRingtone(this, notification);
-                r.play();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+//        if (scene.isVibrate()) {
+//            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+//            v.vibrate(500);
+//        }
+//
+//        if(scene.isRing()) {
+//            try {
+//                Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                Ringtone r = RingtoneManager.getRingtone(this, notification);
+//                r.play();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         currentScene = scene;
 
@@ -254,7 +291,6 @@ public class LALALAService extends NotificationListenerService {
     Scene getDemoSilentMode() {
         Scene ss = new Scene();
         ss.setSystemVolume(0);
-        ss.setVibrate(true);
         ss.setName("silent");
         ss.setId(1);
         ss.setRingerMode(AudioManager.RINGER_MODE_SILENT);
@@ -265,7 +301,6 @@ public class LALALAService extends NotificationListenerService {
         Scene ss = new Scene();
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         ss.setSystemVolume(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-        ss.setRing(true);
         ss.setName("sound");
         ss.setId(2);
         ss.setRingerMode(AudioManager.RINGER_MODE_VIBRATE);
@@ -276,7 +311,6 @@ public class LALALAService extends NotificationListenerService {
         Scene ss = new Scene();
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         ss.setSystemVolume(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM) / 2);
-        ss.setRing(true);
         ss.setName("mid");
         ss.setId(3);
         return ss;
@@ -285,7 +319,6 @@ public class LALALAService extends NotificationListenerService {
     Scene getDemoSilentMode2() {
         Scene ss = new Scene();
         ss.setSystemVolume(0);
-        ss.setVibrate(true);
         ss.setName("silent");
         ss.setId(4);
         return ss;

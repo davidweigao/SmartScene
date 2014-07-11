@@ -12,6 +12,7 @@
         android:targetSdkVersion="20" />
 
     <application
+        android:name=".SmartSceneApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -60,6 +61,14 @@
         <activity
             android:name=".AddWifiTriggerActivity2"
             android:label="@string/title_activity_add_wifi_trigger_activity2" >
+        </activity>
+        <activity
+            android:name=".AddSceneActivity"
+            android:label="@string/title_activity_add_scene" >
+        </activity>
+        <activity
+            android:name=".AddSceneActivity2"
+            android:label="@string/title_activity_add_scene_activity2" >
         </activity>
     </application>
 

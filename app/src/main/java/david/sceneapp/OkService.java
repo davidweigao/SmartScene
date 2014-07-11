@@ -27,7 +27,6 @@ public class OkService extends NotificationListenerService {
     private Scene getDemoSilentMode() {
         Scene ss = new Scene();
         ss.setSystemVolume(0);
-        ss.setVibrate(true);
         return ss;
     }
 
@@ -35,7 +34,6 @@ public class OkService extends NotificationListenerService {
         Scene ss = new Scene();
         AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         ss.setSystemVolume(audioManager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM));
-        ss.setRing(true);
         return ss;
     }
 

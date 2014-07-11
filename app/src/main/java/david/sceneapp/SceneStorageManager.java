@@ -34,12 +34,25 @@ public class SceneStorageManager {
         if(scenesJson != null) {
             scenes = new Gson().fromJson(scenesJson, scenes.getClass());
         }
+
+        int maxId = 0;
+        Map<Integer, Scene> allScene = getAllScene();
+        for(Scene s : allScene.values()) {
+            if(s.getId() > maxId) {
+                maxId = s.getId();
+            }
+        }
+        maxId++;
+        scene.setId(maxId);
+
         scenes.add(new Gson().toJson(scene));
         // update data
         String newScenesJson = new Gson().toJson(scenes);
         final SharedPreferences.Editor editor = sp.edit();
         editor.putString(KEY_ALL_SCESE, newScenesJson);
         editor.commit();
+
+        LALALAService.currentInstance.updateScenes();
     }
 
     public Map<Integer, Scene> getAllScene() {
