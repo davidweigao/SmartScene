@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,6 +19,7 @@ public class SceneStorageManager {
     static final String PREFS_NAME = "sceneInfoShared";
     static final String KEY_ALL_SCESE = "ssjidfj2982f";
     static final String KEY_ALL_TRIGGER = "wefsdge3twrf34";
+    static final String KEY_ALL_EXCEPTION = "jasldfj2ef2";
 
     private SharedPreferences sp;
 
@@ -27,8 +29,6 @@ public class SceneStorageManager {
 
     public void saveScene(Scene scene) {
 
-        // encrypt card sensitive data as a json string
-        // add the new card sensitive data
         String scenesJson = sp.getString(KEY_ALL_SCESE, null);
         ArrayList<String> scenes = new ArrayList<String>();
         if(scenesJson != null) {
@@ -72,8 +72,6 @@ public class SceneStorageManager {
 
     public void saveTrigger(SceneTriggerData triggerData) {
 
-        // encrypt card sensitive data as a json string
-        // add the new card sensitive data
         String scenesJson = sp.getString(KEY_ALL_TRIGGER, null);
         ArrayList<String> triggers = new ArrayList<String>();
         if(scenesJson != null) {
@@ -113,5 +111,109 @@ public class SceneStorageManager {
 
     public void dumpAll() {
         sp.edit().clear().commit();
+    }
+
+    public void deleteScene(int id) {
+        String scenesJson = sp.getString(KEY_ALL_SCESE, null);
+        ArrayList<String> scenes = new ArrayList<String>();
+        if(scenesJson != null) {
+            scenes = new Gson().fromJson(scenesJson, scenes.getClass());
+        }
+
+        for(String s : scenes) {
+            Scene ss = new Gson().fromJson(s, Scene.class);
+            if(ss.getId() == id) {
+                scenes.remove(s);
+                break;
+            }
+        }
+
+        // update data
+        String newScenesJson = new Gson().toJson(scenes);
+        final SharedPreferences.Editor editor = sp.edit();
+        editor.putString(KEY_ALL_SCESE, newScenesJson);
+        editor.commit();
+
+        LALALAService.currentInstance.updateScenes();
+    }
+
+    public void deleteTrigger(int id) {
+        String scenesJson = sp.getString(KEY_ALL_TRIGGER, null);
+        ArrayList<String> triggers = new ArrayList<String>();
+        if(scenesJson != null) {
+            triggers = new Gson().fromJson(scenesJson, triggers.getClass());
+        }
+
+        for(String s : triggers) {
+            SceneTriggerData data = new Gson().fromJson(s, SceneTriggerData.class);
+            if(data.getId() == id) {
+                triggers.remove(s);
+                break;
+            }
+        }
+        // update data
+        String newTriggersJson = new Gson().toJson(triggers);
+        final SharedPreferences.Editor editor = sp.edit();
+        editor.putString(KEY_ALL_TRIGGER, newTriggersJson);
+        editor.commit();
+        LALALAService.currentInstance.updateTriggers();
+    }
+
+    public void saveException(ExceptionScene exp) {
+        String exceptionsJson = sp.getString(KEY_ALL_EXCEPTION, null);
+        ArrayList<String> exceptions = new ArrayList<String>();
+        if(exceptionsJson != null) {
+            exceptions = new Gson().fromJson(exceptionsJson, exceptions.getClass());
+        }
+
+        int id = -1;
+        for(String s : exceptions) {
+            ExceptionScene es = new Gson().fromJson(s, ExceptionScene.class);
+            if(es.getId() > id) {
+                id = es.getId();
+            }
+        }
+        exp.setId(id + 1);
+
+        String newExp = new Gson().toJson(exp);
+        exceptions.add(newExp);
+        String newExceptionsJson = new Gson().toJson(exceptions);
+        sp.edit().putString(KEY_ALL_EXCEPTION, newExceptionsJson).commit();
+    }
+
+    public void deleteException(int id) {
+        String exceptionsJson = sp.getString(KEY_ALL_EXCEPTION, null);
+        ArrayList<String> exceptions = new ArrayList<String>();
+        if(exceptionsJson != null) {
+            exceptions = new Gson().fromJson(exceptionsJson, exceptions.getClass());
+        }
+
+        for(String s : exceptions) {
+            ExceptionScene es = new Gson().fromJson(s, ExceptionScene.class);
+            if(es.getId() == id) {
+                exceptions.remove(s);
+                break;
+            }
+        }
+
+        String newExceptionsJson = new Gson().toJson(exceptions);
+        sp.edit().putString(KEY_ALL_EXCEPTION, newExceptionsJson).commit();
+        if(LALALAService.currentInstance != null)
+            LALALAService.currentInstance.updateExceptions();
+    }
+
+    public List<ExceptionScene> getAllException() {
+        String exceptionsJson = sp.getString(KEY_ALL_EXCEPTION, null);
+        ArrayList<String> exceptions = new ArrayList<String>();
+        if(exceptionsJson != null) {
+            exceptions = new Gson().fromJson(exceptionsJson, exceptions.getClass());
+        }
+
+        ArrayList<ExceptionScene> allExps = new ArrayList<ExceptionScene>();
+        Gson gson = new Gson();
+        for(String s : exceptions) {
+            allExps.add(gson.fromJson(s, ExceptionScene.class));
+        }
+        return allExps;
     }
 }

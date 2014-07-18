@@ -40,11 +40,6 @@
         <activity
             android:name=".SceneListActivity"
             android:label="@string/title_activity_scene_list" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".TriggerListActivity"
@@ -56,7 +51,8 @@
         </activity>
         <activity
             android:name=".AddWifiTriggerActivity"
-            android:label="@string/title_activity_add_wifi_trigger" >
+            android:label="@string/title_activity_add_wifi_trigger"
+            android:launchMode="singleInstance" >
         </activity>
         <activity
             android:name=".AddWifiTriggerActivity2"
@@ -67,8 +63,17 @@
             android:label="@string/title_activity_add_scene" >
         </activity>
         <activity
-            android:name=".AddSceneActivity2"
-            android:label="@string/title_activity_add_scene_activity2" >
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".AddExceptionActivity"
+            android:label="@string/title_activity_add_exception" >
         </activity>
     </application>
 

@@ -12,6 +12,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.support.v13.app.FragmentPagerAdapter;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -263,7 +265,21 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
             for(ApplicationInfo ai : apps) {
                 adapter.add(ai);
             }
-            ((ListView)rootView.findViewById(R.id.appListView)).setAdapter(adapter);
+            final ListView listView = (ListView) rootView.findViewById(R.id.appListView);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(PlaceholderFragment.this.getActivity(), AddExceptionActivity.class);
+                    ApplicationInfo selectedApp = (ApplicationInfo) listView.getItemAtPosition(i);
+                    String pkgName = selectedApp.packageName;
+                    if(suggestionApps.contains(pkgName)) {
+                        intent.putExtra(AddExceptionActivity.EXTRA_FROM_IM, true);
+                    }
+                    intent.putExtra(AddExceptionActivity.EXTRA_PACKAGE, pkgName);
+                    PlaceholderFragment.this.getActivity().startActivity(intent);
+                }
+            });
             return rootView;
         }
     }
@@ -271,6 +287,9 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
     public static Set<String> suggestionApps = new HashSet<String>();
     static {
         suggestionApps.add("com.immomo.momo");
+        suggestionApps.add("com.tencent.mm");
+        suggestionApps.add("jp.naver.line.android");
+        suggestionApps.add("com.whatsapp");
     }
 
 }

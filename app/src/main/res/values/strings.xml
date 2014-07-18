@@ -18,6 +18,9 @@
     <string name="title_activity_add_wifi_trigger_activity2">AddWifiTriggerActivity2</string>
     <string name="title_activity_add_scene">AddSceneActivity</string>
     <string name="ringer_mode_prompt">Choose ringer mode</string>
+    <string name="title_section_scenes">Scenes</string>
+    <string name="title_section_triggers">Triggers</string>
+    <string name="title_section_exceptions">Exceptions</string>
 
     <string-array name="ringer_mode_arrays">
         <item>Silence</item>
@@ -26,5 +29,7 @@
     </string-array>
 
     <string name="title_activity_add_scene_activity2">AddSceneActivity2</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_add_exception">AddExceptionActivity</string>
 
 </resources>

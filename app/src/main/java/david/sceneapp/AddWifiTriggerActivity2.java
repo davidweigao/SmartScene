@@ -3,6 +3,7 @@ package david.sceneapp;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -40,8 +41,7 @@ public class AddWifiTriggerActivity2 extends Activity {
                 triggerData.setTriggerType(SceneTriggerData.TYPE_WIFI_SWITCH);
                 SceneStorageManager ssm = new SceneStorageManager(AddWifiTriggerActivity2.this);
                 ssm.saveTrigger(triggerData);
-
-
+                AddWifiTriggerActivity2.this.startActivity(new Intent(AddWifiTriggerActivity2.this, MainActivity.class));
             }
         });
     }

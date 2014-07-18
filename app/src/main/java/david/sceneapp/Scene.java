@@ -24,6 +24,10 @@ public class Scene {
     private int systemVolume = -1;
     private int ringerMode = -1;
 
+    @Override
+    public String toString() {
+        return name;
+    }
 
     public void setSystemVolume(int systemVolume) {
         this.systemVolume = systemVolume;

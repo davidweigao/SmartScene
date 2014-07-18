@@ -38,6 +38,7 @@ public class LALALAService extends NotificationListenerService {
     static final String ACTION_SCENE_IMPLEMENTED = "com.david.sceneImplemented";
     static final String ACTION_SCENES_UPDATED = "com.david.sceneUpdated";
     static final String ACTION_TRIGGERS_UPDATED = "com.david.triggerUpdated";
+    static final String ACTION_EXCEPTIONS_UPDATED = "com.david.exceptionsUpdated";
     static final String EXTRA_SCENE_INDEX = "scene_index";
     static final String EXTRA_FROM_TRIGGER = "from_trigger";
     static final String EXTRA_SCENE_ID = "com.david.extraSceneId";
@@ -50,7 +51,7 @@ public class LALALAService extends NotificationListenerService {
     public static boolean wifiEnabled = false;
 
 
-    private  ArrayList<Scene> scenes = new ArrayList<Scene>();
+    private ArrayList<Scene> scenes = new ArrayList<Scene>();
     private Map<Integer, Scene> sceneMap = new HashMap<Integer, Scene>();
 
     public ArrayList<Scene> getScenes() {
@@ -61,20 +62,26 @@ public class LALALAService extends NotificationListenerService {
         return sceneMap;
     }
 
+    private ArrayList<ExceptionScene> exceptions = new ArrayList<ExceptionScene>();
+
+    public ArrayList<ExceptionScene> getExceptions() {
+        return exceptions;
+    }
+
     static Scene currentScene = null;
-    private Map<Integer, SceneTrigger> triggers = new HashMap<Integer,SceneTrigger>();
+    private Map<Integer, SceneTrigger> triggers = new HashMap<Integer, SceneTrigger>();
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(action.equals(ACTION_CLICK_NOTIFICATION)) {
+            if (action.equals(ACTION_CLICK_NOTIFICATION)) {
                 int index = intent.getIntExtra(EXTRA_SCENE_INDEX, -1);
-                if(index > -1 && index < SCENE_CAPACITY) {
-                    if(!intent.getBooleanExtra(EXTRA_FROM_TRIGGER,false))
-                        LALALAService.this.implementScene(scenes.get(index));
+                if (index > -1 && index < SCENE_CAPACITY) {
+                    if (!intent.getBooleanExtra(EXTRA_FROM_TRIGGER, false))
+                        LALALAService.this.implementScene(scenes.get(index),false);
                 }
-            } else if(action.equals(ACTION_SCENE_IMPLEMENTED)) {
+            } else if (action.equals(ACTION_SCENE_IMPLEMENTED) || action.equals(ACTION_SCENES_UPDATED)) {
                 addRemoteView();
             }
         }
@@ -82,11 +89,11 @@ public class LALALAService extends NotificationListenerService {
 
 
     private String TAG = this.getClass().getSimpleName();
+
     @Override
     public void onCreate() {
         super.onCreate();
         currentInstance = this;
-
 
 
 //        SceneStorageManager ssm = new SceneStorageManager(this);
@@ -122,6 +129,7 @@ public class LALALAService extends NotificationListenerService {
 
         updateScenes();
         updateTriggers();
+        updateExceptions();
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
@@ -130,6 +138,7 @@ public class LALALAService extends NotificationListenerService {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_CLICK_NOTIFICATION);
         filter.addAction(ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(ACTION_SCENES_UPDATED);
         registerReceiver(receiver, filter);
 
 
@@ -157,29 +166,56 @@ public class LALALAService extends NotificationListenerService {
     void updateScenes() {
         SceneStorageManager ssm = new SceneStorageManager(this);
         sceneMap = ssm.getAllScene();
+        scenes.clear();
         scenes.addAll(sceneMap.values());
         sendBroadcast(new Intent(ACTION_SCENES_UPDATED));
     }
 
 
 
+    void deleteScene(int id) {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        ssm.deleteScene(id);
+    }
+
+    void updateExceptions() {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        exceptions.clear();
+        exceptions.addAll(ssm.getAllException());
+        for(ExceptionScene es : exceptions) es.setActivated(true);
+        sendBroadcast(new Intent(ACTION_EXCEPTIONS_UPDATED));
+    }
+
+    void deleteException(int id) {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        ssm.deleteException(id);
+    }
+
+
     private void addRemoteView() {
-        if(scenes.isEmpty()) return;
+        if (scenes.isEmpty()) return;
 //        remoteViews.removeAllViews(R.id.buttonContainer);
-        for(int i = 0; i < Math.min(SCENE_CAPACITY, scenes.size()); i++) {
-            Scene s = scenes.get(i);
-            int buttonId = getIdBySceneIndex(i);
-            remoteViews.setCharSequence(buttonId, "setText", s.getName());
-            if(s.equals(currentScene)) {
-                remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_red_dark);
+        for (int i = 0; i < SCENE_CAPACITY; i++) {
+            if (i < scenes.size()) {
+                Scene s = scenes.get(i);
+                int buttonId = getIdBySceneIndex(i);
+                remoteViews.setCharSequence(buttonId, "setText", s.getName());
+                if (s.equals(currentScene)) {
+                    remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_red_dark);
+                } else {
+                    remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_blue_bright);
+                }
+                Intent resultIntent = new Intent();
+                resultIntent.setAction(ACTION_CLICK_NOTIFICATION);
+                resultIntent.putExtra(EXTRA_SCENE_INDEX, i);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, s.getId(), resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                remoteViews.setOnClickPendingIntent(buttonId, pendingIntent);
             } else {
+                int buttonId = getIdBySceneIndex(i);
+                remoteViews.setCharSequence(buttonId, "setText", "unknown");
                 remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_blue_bright);
             }
-            Intent resultIntent = new Intent();
-            resultIntent.setAction(ACTION_CLICK_NOTIFICATION);
-            resultIntent.putExtra(EXTRA_SCENE_INDEX, i);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(this, s.getId(), resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            remoteViews.setOnClickPendingIntent(buttonId, pendingIntent);
+
         }
         Notification.Builder mBuilder = new Notification.Builder(
                 this).setSmallIcon(R.drawable.ic_launcher).setContent(
@@ -189,16 +225,21 @@ public class LALALAService extends NotificationListenerService {
 
     private int getIdBySceneIndex(int index) {
         switch (index) {
-            case 0: return R.id.sceneButton1;
-            case 1: return R.id.sceneButton2;
-            case 2: return R.id.sceneButton3;
-            case 3: return R.id.sceneButton4;
-            default: return 0;
+            case 0:
+                return R.id.sceneButton1;
+            case 1:
+                return R.id.sceneButton2;
+            case 2:
+                return R.id.sceneButton3;
+            case 3:
+                return R.id.sceneButton4;
+            default:
+                return 0;
         }
     }
 
     public void toggleTrigger(int triggerId, boolean activate) {
-        if(activate)
+        if (activate)
             triggers.get(triggerId).activate();
         else
             triggers.get(triggerId).deactivate();
@@ -206,9 +247,9 @@ public class LALALAService extends NotificationListenerService {
 
     public void toggleAllWifiSwitch(boolean activate) {
         wifiEnabled = activate;
-        for(SceneTrigger st : triggers.values()) {
-            if(st instanceof WifiSceneTrigger) {
-                if(activate) st.activate();
+        for (SceneTrigger st : triggers.values()) {
+            if (st instanceof WifiSceneTrigger) {
+                if (activate) st.activate();
                 else st.deactivate();
             }
         }
@@ -216,7 +257,7 @@ public class LALALAService extends NotificationListenerService {
     }
 
 
-    public void implementScene(Scene scene) {
+    public void implementScene(Scene scene, boolean silent) {
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (am == null) {
             Log.e(TAG, "sound manager is null");
@@ -229,17 +270,17 @@ public class LALALAService extends NotificationListenerService {
 
         int max = scene.getAlarmVolume();
         int maxOne = alarm;
-        if(scene.getMusicVolume() > max) {
+        if (scene.getMusicVolume() > max) {
             max = scene.getMusicVolume();
             maxOne = music;
         }
-        if(scene.getSystemVolume() > max) {
+        if (scene.getSystemVolume() > max) {
             max = scene.getSystemVolume();
             maxOne = sys;
         }
 
         int theFlag = AudioManager.FLAG_PLAY_SOUND;
-        if(scene.getSystemVolume() + scene.getMusicVolume() + scene.getSystemVolume() == 0)
+        if (scene.getSystemVolume() + scene.getMusicVolume() + scene.getSystemVolume() == 0)
             theFlag = AudioManager.FLAG_VIBRATE;
 
         if (scene.getAlarmVolume() != -1)
@@ -250,7 +291,7 @@ public class LALALAService extends NotificationListenerService {
             am.setStreamVolume(AudioManager.STREAM_SYSTEM, scene.getSystemVolume(), maxOne == sys ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getVoiceCallVolume() != -1)
             am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, scene.getVoiceCallVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-        if(scene.getRingerMode() != -1) am.setRingerMode(scene.getRingerMode());
+        if (scene.getRingerMode() != -1) am.setRingerMode(scene.getRingerMode());
 
 //        if (scene.isVibrate()) {
 //            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
@@ -269,18 +310,37 @@ public class LALALAService extends NotificationListenerService {
 
         currentScene = scene;
 
-        Intent intent = new Intent(ACTION_SCENE_IMPLEMENTED);
-        intent.putExtra(EXTRA_SCENE_ID, scene.getId());
-        sendBroadcast(intent);
+        if(!silent) {
+            Intent intent = new Intent(ACTION_SCENE_IMPLEMENTED);
+            intent.putExtra(EXTRA_SCENE_ID, scene.getId());
+            sendBroadcast(intent);
+        }
+
     }
 
     public void implementScene(int sceneId) {
-        for(Scene s : scenes) {
-            if(sceneId == s.getId()) {
-                implementScene(s);
+        for (Scene s : scenes) {
+            if (sceneId == s.getId()) {
+                implementScene(s, false);
                 break;
             }
         }
+    }
+
+    public void implementException(ExceptionScene exp) {
+        if(exp.getVolume() > 0) {
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,exp.getVolume(),AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(this, notification);
+            r.setStreamType(AudioManager.STREAM_NOTIFICATION);
+            r.play();
+        }
+        else if(exp.isVibrate()) {
+                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                v.vibrate(500);
+        }
+        implementScene(currentScene,true);
     }
 
     @Override
@@ -327,18 +387,44 @@ public class LALALAService extends NotificationListenerService {
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
 
-        Log.i(TAG,"**********  onNotificationPosted");
+        Log.i(TAG, "**********  onNotificationPosted");
         Log.i(TAG, "ID :" + sbn.getId() + "\t" + sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
-        Intent i = new  Intent(ACTION_GET_NOTIFICATION);
+        Intent i = new Intent(ACTION_GET_NOTIFICATION);
         i.putExtra(KEY_NOTIF_PKG_NAME, sbn.getPackageName());
         sendBroadcast(i);
+
+        String pkg = sbn.getPackageName();
+        String message = sbn.getNotification().tickerText.toString();
+        for(ExceptionScene es : exceptions) {
+            if(es.getPkgName().equals(pkg)) {
+                if(!es.isActivated()) {
+                    return;
+                }
+                if(es.getParams().size() == 0) {
+                    implementException(es);
+                    return;
+                } else {
+                    for(String s : es.getParams()) {
+                        if(message.contains(s)) {
+                            implementException(es);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        Log.i(TAG,"********** onNOtificationRemoved");
-        Log.i(TAG,"ID :" + sbn.getId() + "\t" + sbn.getNotification().tickerText +"\t" + sbn.getPackageName());
+        Log.i(TAG, "********** onNOtificationRemoved");
+        Log.i(TAG, "ID :" + sbn.getId() + "\t" + sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
 
     }
 
+    public void deleteTrigger(int id) {
+        SceneStorageManager ssm = new SceneStorageManager(this);
+        ssm.deleteTrigger(id);
+
+    }
 }

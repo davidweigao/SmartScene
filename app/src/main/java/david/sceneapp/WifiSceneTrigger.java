@@ -52,7 +52,7 @@ public class WifiSceneTrigger implements SceneTrigger {
     private void useWifiInfo(WifiInfo wifiInfo, Context context) {
         currentWifiInfo = wifiInfo;
         if(isQualified()) {
-            LALALAService.currentInstance.implementScene(scene);
+            LALALAService.currentInstance.implementScene(scene,false);
         }
         currentWifiInfo = null;
     }

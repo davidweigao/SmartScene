@@ -15,6 +15,22 @@ public class SceneTriggerData {
     private String name;
     private String[] parameters;
 
+    @Override
+    public String toString() {
+        String sceneName = "none";
+        if(LALALAService.currentInstance != null) {
+            sceneName = LALALAService.currentInstance.getSceneMap().get(sceneId).getName();
+        }
+        switch (triggerType) {
+            case TYPE_WIFI_SWITCH:
+                return "wifi trigger: " + parameters[0] + "--->" + sceneName;
+            case TYPE_NOTIFICATION:
+                return "notification: " + parameters[0] + "--->" + sceneName;
+            default:return super.toString();
+        }
+
+    }
+
     public int getSceneId() {
         return sceneId;
     }
