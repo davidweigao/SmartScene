@@ -1,5 +1,7 @@
 package david.sceneapp;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
@@ -43,6 +45,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
     SceneFragment mSceneFragment = SceneFragment.newInstance("", "");
     TriggerFragment mTriggerFragment = TriggerFragment.newInstance("", "");
     ExceptionFragment mExceptionFragment = ExceptionFragment.newInstance("", "");
+    List<Fragment> fragmentList = new ArrayList<Fragment>();
+    List<String> fragmentTitleList = new ArrayList<String>();
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -66,12 +70,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
+        fragmentList.add(mSceneFragment);
+        fragmentList.add(mTriggerFragment);
+        fragmentList.add(mExceptionFragment);
+
+        fragmentTitleList.add(getString(R.string.title_section_scenes));
+        fragmentTitleList.add(getString(R.string.title_section_triggers));
+        fragmentTitleList.add(getString(R.string.title_section_exceptions));
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-
-
-
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -183,36 +191,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-            switch (position) {
-                case 0:
-                    return mSceneFragment;
-                case 1:
-                    return mTriggerFragment;
-                default:
-                    return mExceptionFragment;
-            }
+            return fragmentList.get(position);
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            return fragmentList.size();
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section_scenes).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section_triggers).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section_exceptions).toUpperCase(l);
-            }
-            return null;
+            return fragmentTitleList.get(position);
         }
     }
 
