@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Created by david on 7/16/14.
  */
-public class ExceptionScene {
+public class ExceptionScene implements SceneAppData {
     private int id;
     private int volume;
     private boolean vibrate;

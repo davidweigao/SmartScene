@@ -14,7 +14,7 @@ import android.util.Log;
 /**
  * Created by david on 7/1/14.
  */
-public class Scene {
+public class Scene implements SceneAppData{
     private int id;
     private String name;
 

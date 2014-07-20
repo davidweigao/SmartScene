@@ -27,26 +27,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
         TriggerFragment.OnTriggerInteractionListener,
         ExceptionFragment.OnFragmentInteractionListener{
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager mViewPager;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    ViewPager mViewPager;
-
-    SceneFragment mSceneFragment = SceneFragment.newInstance("", "");
-    TriggerFragment mTriggerFragment = TriggerFragment.newInstance("", "");
-    ExceptionFragment mExceptionFragment = ExceptionFragment.newInstance("", "");
-    List<Fragment> fragmentList = new ArrayList<Fragment>();
-    List<String> fragmentTitleList = new ArrayList<String>();
+    private SceneFragment mSceneFragment = SceneFragment.newInstance("", "");
+    private TriggerFragment mTriggerFragment = TriggerFragment.newInstance("", "");
+    private ExceptionFragment mExceptionFragment = ExceptionFragment.newInstance("", "");
+    private List<Fragment> fragmentList = new ArrayList<Fragment>();
+    private List<String> fragmentTitleList = new ArrayList<String>();
 
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -77,6 +65,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
         fragmentTitleList.add(getString(R.string.title_section_scenes));
         fragmentTitleList.add(getString(R.string.title_section_triggers));
         fragmentTitleList.add(getString(R.string.title_section_exceptions));
+
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);

@@ -3,7 +3,7 @@ package david.sceneapp;
 /**
  * Created by David on 7/9/2014.
  */
-public class SceneTriggerData {
+public class SceneTriggerData implements SceneAppData {
 
     static final int TYPE_WIFI_SWITCH = 1;
     static final int TYPE_NOTIFICATION = 2;
