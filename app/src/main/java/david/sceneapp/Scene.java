@@ -11,10 +11,12 @@ import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import java.io.Serializable;
+
 /**
  * Created by david on 7/1/14.
  */
-public class Scene implements SceneAppData{
+public class Scene implements SceneAppData, Serializable{
     private int id;
     private String name;
 

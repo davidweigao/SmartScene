@@ -1,12 +1,13 @@
 package david.sceneapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by david on 7/16/14.
  */
-public class ExceptionScene implements SceneAppData {
+public class ExceptionScene implements SceneAppData, Serializable {
     private int id;
     private int volume;
     private boolean vibrate;

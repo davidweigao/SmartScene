@@ -1,9 +1,11 @@
 package david.sceneapp;
 
+import java.io.Serializable;
+
 /**
  * Created by David on 7/9/2014.
  */
-public class SceneTriggerData implements SceneAppData {
+public class SceneTriggerData implements SceneAppData, Serializable {
 
     static final int TYPE_WIFI_SWITCH = 1;
     static final int TYPE_NOTIFICATION = 2;
@@ -19,8 +21,11 @@ public class SceneTriggerData implements SceneAppData {
     public String toString() {
         String sceneName = "none";
         if(LALALAService.currentInstance != null) {
-            sceneName = LALALAService.currentInstance.getSceneMap().get(sceneId).getName();
+            Scene s =  LALALAService.currentInstance.getSceneMap().get(sceneId);
+            if(s == null) return "broken";
+            sceneName =s.getName();
         }
+
         switch (triggerType) {
             case TYPE_WIFI_SWITCH:
                 return "wifi trigger: " + parameters[0] + "--->" + sceneName;

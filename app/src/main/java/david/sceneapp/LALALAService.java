@@ -24,6 +24,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class LALALAService extends NotificationListenerService {
 
 
     private ArrayList<Scene> scenes = new ArrayList<Scene>();
-    private Map<Integer, Scene> sceneMap = new HashMap<Integer, Scene>();
+    private Map<Integer, Scene> sceneMap = new LinkedHashMap<Integer, Scene>();
 
     public ArrayList<Scene> getScenes() {
         return scenes;
@@ -69,7 +70,7 @@ public class LALALAService extends NotificationListenerService {
     }
 
     static Scene currentScene = null;
-    private Map<Integer, SceneTrigger> triggers = new HashMap<Integer, SceneTrigger>();
+    private Map<Integer, SceneTrigger> triggers = new LinkedHashMap<Integer, SceneTrigger>();
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -147,6 +148,7 @@ public class LALALAService extends NotificationListenerService {
     void updateTriggers() {
         SceneStorageManager ssm = new SceneStorageManager(this);
         Map<Integer, SceneTriggerData> triggerDatas = ssm.getAllTrigger();
+        if(triggerDatas == null) return;
         for (SceneTriggerData st : triggerDatas.values()) {
             switch (st.getTriggerType()) {
                 case SceneTriggerData.TYPE_WIFI_SWITCH:
@@ -167,6 +169,7 @@ public class LALALAService extends NotificationListenerService {
         SceneStorageManager ssm = new SceneStorageManager(this);
         sceneMap = ssm.getAllScene();
         scenes.clear();
+        if(sceneMap != null)
         scenes.addAll(sceneMap.values());
         sendBroadcast(new Intent(ACTION_SCENES_UPDATED));
     }
