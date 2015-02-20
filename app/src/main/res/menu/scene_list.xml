@@ -1,6 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="david.sceneapp.SceneListActivity" >
+    tools:context="david.sceneapp.Activity.SceneListActivity" >
     <item android:id="@+id/wifi_switch_edit"
         android:title="@string/wifi_switch_edit"
         android:showAsAction="never" />

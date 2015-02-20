@@ -12,17 +12,17 @@
         android:targetSdkVersion="20" />
 
     <application
-        android:name=".SmartSceneApp"
+        android:name=".Model.SmartSceneApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".WifiActivity"
+            android:name=".Activity.WifiActivity"
             android:label="@string/app_name"
             android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".NotificationHandlerActivity" />
+        <activity android:name=".Activity.NotificationHandlerActivity" />
 
         <service
             android:name=".LALALAService"
@@ -34,37 +34,37 @@
         </service>
 
         <activity
-            android:name=".AppListActivity"
+            android:name=".Activity.AppListActivity"
             android:label="@string/title_activity_app_list" >
         </activity>
         <activity
-            android:name=".SceneListActivity"
+            android:name=".Activity.SceneListActivity"
             android:label="@string/title_activity_scene_list" >
         </activity>
         <activity
-            android:name=".TriggerListActivity"
+            android:name=".Activity.TriggerListActivity"
             android:label="@string/title_activity_wifi_trigger_list" >
         </activity>
         <activity
-            android:name=".AddTriggerOptionActivity"
+            android:name=".Activity.AddTriggerOptionActivity"
             android:label="@string/title_activity_add_trigger_option" >
         </activity>
         <activity
-            android:name=".AddWifiTriggerActivity"
+            android:name=".Activity.AddWifiTriggerActivity"
             android:label="@string/title_activity_add_wifi_trigger"
             android:launchMode="singleInstance" >
         </activity>
         <activity
-            android:name=".AddWifiTriggerActivity2"
+            android:name=".Activity.AddWifiTriggerActivity2"
             android:label="@string/title_activity_add_wifi_trigger_activity2" >
         </activity>
         <activity
-            android:name=".AddSceneActivity"
+            android:name=".Activity.AddSceneActivity"
             android:label="@string/title_activity_add_scene" >
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:name=".Activity.MainActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -72,7 +72,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AddExceptionActivity"
+            android:name=".Activity.AddExceptionActivity"
             android:label="@string/title_activity_add_exception" >
         </activity>
     </application>

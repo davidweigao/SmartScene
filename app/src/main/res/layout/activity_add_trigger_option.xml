@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="david.sceneapp.AddTriggerOptionActivity">
+    tools:context="david.sceneapp.Activity.AddTriggerOptionActivity">
 
     <Button
         android:id="@+id/wifiTriggerBT"
