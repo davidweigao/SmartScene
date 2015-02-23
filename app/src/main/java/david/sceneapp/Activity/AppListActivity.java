@@ -194,7 +194,8 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
                     return new AppFilter(){
                         @Override
                         public boolean filter(ApplicationInfo appInfo) {
-                            return (appInfo.flags & ApplicationInfo.FLAG_SYSTEM | appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0;
+                            return (appInfo.flags & ApplicationInfo.FLAG_SYSTEM
+                                    | appInfo.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0;
                         }
                     };
                 case 2:
@@ -228,7 +229,8 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber, List<ApplicationInfo> apps) {
+        public static PlaceholderFragment newInstance(int sectionNumber,
+                                                      List<ApplicationInfo> apps) {
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
@@ -244,9 +246,11 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_app_list, container, false);
-            ArrayAdapter<ApplicationInfo> adapter = new ArrayAdapter<ApplicationInfo>(getActivity(), R.layout.list_item_app) {
+            ArrayAdapter<ApplicationInfo> adapter = new ArrayAdapter<ApplicationInfo>(getActivity(),
+                    R.layout.list_item_app) {
                 final PackageManager pm = getActivity().getPackageManager();
-                LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater)getContext()
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 @Override
                 public View getView(int position, View convertView, ViewGroup parent) {
                     //return super.getView(position, convertView, parent);
@@ -268,7 +272,8 @@ public class AppListActivity extends Activity implements ActionBar.TabListener {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(PlaceholderFragment.this.getActivity(), AddExceptionActivity.class);
+                    Intent intent = new Intent(
+                            PlaceholderFragment.this.getActivity(), AddExceptionActivity.class);
                     ApplicationInfo selectedApp = (ApplicationInfo) listView.getItemAtPosition(i);
                     String pkgName = selectedApp.packageName;
                     if(suggestionApps.contains(pkgName)) {

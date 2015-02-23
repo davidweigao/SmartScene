@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.R;
 import david.sceneapp.Model.Scene;
 import david.sceneapp.SceneStorageManager;
@@ -32,7 +32,8 @@ public class AddWifiTriggerActivity2 extends Activity {
         wifiName = getIntent().getStringExtra(AddWifiTriggerActivity.EXTRA_WIFI_NAME);
         setContentView(R.layout.activity_add_wifi_trigger_activity2);
         ListView listView = (ListView) findViewById(R.id.listView);
-        final SceneAdapter adapter = new SceneAdapter(this, android.R.layout.simple_list_item_1, LALALAService.currentInstance.getScenes());
+        final SceneAdapter adapter = new SceneAdapter(this, android.R.layout.simple_list_item_1,
+                SceneManageService.currentInstance.getScenes());
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -44,7 +45,8 @@ public class AddWifiTriggerActivity2 extends Activity {
                 triggerData.setTriggerType(SceneTriggerData.TYPE_WIFI_SWITCH);
                 SceneStorageManager ssm = new SceneStorageManager(AddWifiTriggerActivity2.this);
                 ssm.saveTrigger(triggerData);
-                AddWifiTriggerActivity2.this.startActivity(new Intent(AddWifiTriggerActivity2.this, MainActivity.class));
+                AddWifiTriggerActivity2.this.startActivity(
+                        new Intent(AddWifiTriggerActivity2.this, MainActivity.class));
             }
         });
     }
@@ -71,7 +73,8 @@ public class AddWifiTriggerActivity2 extends Activity {
 
     private class SceneAdapter extends ArrayAdapter<Scene> {
 
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         public SceneAdapter(Context context, int resource, List<Scene> objects) {
             super(context, resource, objects);
         }
@@ -81,7 +84,8 @@ public class AddWifiTriggerActivity2 extends Activity {
             if(convertView == null) {
                 convertView = inflater.inflate(android.R.layout.simple_list_item_1, null);
             }
-            ((TextView)convertView.findViewById(android.R.id.text1)).setText(getItem(position).getName());
+            ((TextView)convertView.findViewById(android.R.id.text1))
+                    .setText(getItem(position).getName());
             return convertView;
 
         }

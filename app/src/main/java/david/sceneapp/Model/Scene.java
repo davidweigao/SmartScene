@@ -81,10 +81,6 @@ public class Scene implements SceneAppData, Serializable{
     }
 
     public boolean isCurrentSystemSeeting(AudioManager am) {
-//        Log.d(TAG, am.getStreamVolume(AudioManager.STREAM_ALARM) + " " + am.getStreamVolume(AudioManager.STREAM_MUSIC) + " " +
-//                am.getStreamVolume(AudioManager.STREAM_SYSTEM) + " " + am.getStreamVolume(AudioManager.STREAM_VOICE_CALL) + " " +
-//                am.getRingerMode() + "");
-//        Log.d(TAG, alarmVolume + " " + musicVolume + " " + systemVolume + " " + voiceCallVolume + " " + ringerMode);
         return alarmVolume == am.getStreamVolume(AudioManager.STREAM_ALARM)
                 && musicVolume == am.getStreamVolume(AudioManager.STREAM_MUSIC)
                 && systemVolume == am.getStreamVolume(AudioManager.STREAM_SYSTEM)

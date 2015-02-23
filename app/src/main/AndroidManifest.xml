@@ -25,7 +25,7 @@
         <activity android:name=".Activity.NotificationHandlerActivity" />
 
         <service
-            android:name=".LALALAService"
+            android:name=".SceneManageService"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" >
             <intent-filter>

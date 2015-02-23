@@ -68,7 +68,9 @@ public class AudioActivity extends ActionBarActivity implements View.OnClickList
                 "\n" +
                 "voiceCallVolume: %d" +
                 "\nsystemVolume: %d" +
-                "\nringVolume: %d" , alarmVolume, dtmfVolume, musicVolume, notifVolume, voiceCallVolume, systemVolume,ringVolume);
+                "\nringVolume: %d" ,
+                alarmVolume, dtmfVolume, musicVolume,
+                notifVolume, voiceCallVolume, systemVolume,ringVolume);
         infoTv.setText(volumeInfo);
 
     }

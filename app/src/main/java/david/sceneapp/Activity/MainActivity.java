@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import david.sceneapp.Fragment.ExceptionFragment;
 import david.sceneapp.Fragment.SceneFragment;
 import david.sceneapp.Fragment.TriggerFragment;
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.R;
 
 public class MainActivity extends Activity implements ActionBar.TabListener,
@@ -44,15 +44,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
     BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(LALALAService.ACTION_SCENE_IMPLEMENTED)) {
-                int id = intent.getIntExtra(LALALAService.EXTRA_SCENE_ID, -1);
+            if(intent.getAction().equals(SceneManageService.ACTION_SCENE_IMPLEMENTED)) {
+                int id = intent.getIntExtra(SceneManageService.EXTRA_SCENE_ID, -1);
                 if (mSceneFragment != null && id != -1) {
-                    mSceneFragment.selectScene(LALALAService.currentScene);
+                    mSceneFragment.selectScene(SceneManageService.currentScene);
                 }
-            } else if(intent.getAction().equals(LALALAService.ACTION_SCENES_UPDATED)) {
-                mSceneFragment.updateScene(LALALAService.currentInstance.getScenes());
-            } else if(intent.getAction().equals(LALALAService.ACTION_EXCEPTIONS_UPDATED)) {
-                mExceptionFragment.updateException(LALALAService.currentInstance.getExceptions());
+            } else if(intent.getAction().equals(SceneManageService.ACTION_SCENES_UPDATED)) {
+                mSceneFragment.updateScene(SceneManageService.currentInstance.getScenes());
+            } else if(intent.getAction().equals(SceneManageService.ACTION_EXCEPTIONS_UPDATED)) {
+                mExceptionFragment.updateException(
+                        SceneManageService.currentInstance.getExceptions());
             }
         }
     };
@@ -111,9 +112,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
     protected void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter();
-        filter.addAction(LALALAService.ACTION_SCENE_IMPLEMENTED);
-        filter.addAction(LALALAService.ACTION_SCENES_UPDATED);
-        filter.addAction(LALALAService.ACTION_EXCEPTIONS_UPDATED);
+        filter.addAction(SceneManageService.ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(SceneManageService.ACTION_SCENES_UPDATED);
+        filter.addAction(SceneManageService.ACTION_EXCEPTIONS_UPDATED);
         registerReceiver(mReceiver, filter);
 
 
@@ -160,7 +161,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
 
     @Override
     public void onSceneClicked(int id) {
-        LALALAService.currentInstance.implementScene(id);
+        SceneManageService.currentInstance.implementScene(id);
     }
 
     @Override

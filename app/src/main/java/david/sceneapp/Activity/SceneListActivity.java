@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.R;
 import david.sceneapp.Model.Scene;
 
@@ -46,25 +46,25 @@ public class SceneListActivity extends Activity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if(position > 0) {
                     Scene s = (Scene) listView.getItemAtPosition(position);
-                    LALALAService.currentInstance.implementScene(s.getId());
+                    SceneManageService.currentInstance.implementScene(s.getId());
                 }
             }
         });
 
-        IntentFilter filter = new IntentFilter(LALALAService.ACTION_SCENE_IMPLEMENTED);
-        filter.addAction(LALALAService.ACTION_SCENES_UPDATED);
+        IntentFilter filter = new IntentFilter(SceneManageService.ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(SceneManageService.ACTION_SCENES_UPDATED);
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if(intent.getAction().equals(LALALAService.ACTION_SCENE_IMPLEMENTED)) {
-                    int id = intent.getIntExtra(LALALAService.EXTRA_SCENE_ID, -1);
+                if(intent.getAction().equals(SceneManageService.ACTION_SCENE_IMPLEMENTED)) {
+                    int id = intent.getIntExtra(SceneManageService.EXTRA_SCENE_ID, -1);
                     if(id != -1) {
                         Scene s = sceneMap.get(id);
                         int position = adapter.getPosition(s);
                         selectedSceneIndex = position;
                         adapter.notifyDataSetInvalidated();
                     }
-                } else if(intent.getAction().equals(LALALAService.ACTION_SCENES_UPDATED)) {
+                } else if(intent.getAction().equals(SceneManageService.ACTION_SCENES_UPDATED)) {
                     updateList();
                     adapter.notifyDataSetChanged();
                 }
@@ -76,14 +76,14 @@ public class SceneListActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(LALALAService.currentInstance != null)
-            LALALAService.currentInstance.updateScenes();
+        if(SceneManageService.currentInstance != null)
+            SceneManageService.currentInstance.updateScenes();
     }
 
     private void updateList() {
         List<Object> objects = new ArrayList<Object>();
         objects.add(new Object());
-        sceneMap = LALALAService.currentInstance.getSceneMap();
+        sceneMap = SceneManageService.currentInstance.getSceneMap();
 
         objects.addAll(sceneMap.values());
         adapter = new SceneArrayAdapter(this, R.layout.list_item_scene, objects);
@@ -116,7 +116,8 @@ public class SceneListActivity extends Activity {
 
 
     private class SceneArrayAdapter extends ArrayAdapter<Object> {
-        LayoutInflater inflater = (LayoutInflater)getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater)getContext()
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         public SceneArrayAdapter(Context context, int resource, List<Object> objects) {
             super(context, resource, objects);
@@ -138,7 +139,7 @@ public class SceneListActivity extends Activity {
             tb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    LALALAService.currentInstance.toggleAllWifiSwitch(isChecked);
+                    SceneManageService.currentInstance.toggleAllWifiSwitch(isChecked);
                 }
             });
             return v;

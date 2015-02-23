@@ -9,7 +9,7 @@ import android.widget.Toast;
 import java.util.HashSet;
 import java.util.Set;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 
 /**
  * Created by david on 7/2/14.
@@ -30,12 +30,12 @@ public class NotificationSceneTrigger implements SceneTrigger {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String pkgName = intent.getStringExtra(LALALAService.KEY_NOTIF_PKG_NAME);
+            String pkgName = intent.getStringExtra(SceneManageService.KEY_NOTIF_PKG_NAME);
             if(pkgName != null) {
                 if(pkgNames.contains(pkgName)) {
                     Toast.makeText(context, pkgName, Toast.LENGTH_SHORT).show();
                     if(isQualified()) {
-                        LALALAService.currentInstance.implementScene(scene,false);
+                        SceneManageService.currentInstance.implementScene(scene,false);
                         if(extraAction != null)
                             extraAction.action();
                     }
@@ -57,7 +57,7 @@ public class NotificationSceneTrigger implements SceneTrigger {
     @Override
     public void activate() {
         final IntentFilter filter = new IntentFilter();
-        filter.addAction(LALALAService.ACTION_GET_NOTIFICATION);
+        filter.addAction(SceneManageService.ACTION_GET_NOTIFICATION);
         activateContext.registerReceiver(receiver, filter);
     }
 

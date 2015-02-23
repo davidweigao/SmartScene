@@ -20,7 +20,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.R;
 
 
@@ -61,8 +61,8 @@ public class WifiActivity extends ActionBarActivity {
 
     private void showServiceState() {
         String info = null;
-        if(LALALAService.currentInstance == null) {
-            Intent intent = new Intent(this,LALALAService.class);
+        if(SceneManageService.currentInstance == null) {
+            Intent intent = new Intent(this,SceneManageService.class);
             if(startService(intent) != null) {
                 info = "smart scene service started";
             } else {
@@ -96,7 +96,9 @@ public class WifiActivity extends ActionBarActivity {
                 "\n" +
                 "voiceCallVolume: %d" +
                 "\nsystemVolume: %d" +
-                "\nringVolume: %d", alarmVolume, dtmfVolume, musicVolume, notifVolume, voiceCallVolume, systemVolume, ringVolume);
+                "\nringVolume: %d",
+                alarmVolume, dtmfVolume, musicVolume, notifVolume,
+                voiceCallVolume, systemVolume, ringVolume);
         mInfoTV.setText(volumeInfo);
 
     }

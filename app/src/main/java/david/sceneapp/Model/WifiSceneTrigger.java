@@ -9,7 +9,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 
 /**
  * Created by david on 7/2/14.
@@ -40,7 +40,8 @@ public class WifiSceneTrigger implements SceneTrigger {
                 if (networkInfo != null) {
                     switch (networkInfo.getState()) {
                         case CONNECTED:
-                            WifiInfo wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+                            WifiInfo wifiInfo =
+                                    intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
                             if (wifiInfo != null) {
                                 useWifiInfo(wifiInfo, context);
                             }
@@ -57,7 +58,7 @@ public class WifiSceneTrigger implements SceneTrigger {
     private void useWifiInfo(WifiInfo wifiInfo, Context context) {
         currentWifiInfo = wifiInfo;
         if(isQualified()) {
-            LALALAService.currentInstance.implementScene(scene,false);
+            SceneManageService.currentInstance.implementScene(scene,false);
         }
         currentWifiInfo = null;
     }

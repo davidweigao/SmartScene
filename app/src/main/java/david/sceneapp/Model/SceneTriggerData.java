@@ -2,7 +2,7 @@ package david.sceneapp.Model;
 
 import java.io.Serializable;
 
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 
 /**
  * Created by David on 7/9/2014.
@@ -22,8 +22,8 @@ public class SceneTriggerData implements SceneAppData, Serializable {
     @Override
     public String toString() {
         String sceneName = "none";
-        if(LALALAService.currentInstance != null) {
-            Scene s =  LALALAService.currentInstance.getSceneMap().get(sceneId);
+        if(SceneManageService.currentInstance != null) {
+            Scene s =  SceneManageService.currentInstance.getSceneMap().get(sceneId);
             if(s == null) return "broken";
             sceneName =s.getName();
         }

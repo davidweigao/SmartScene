@@ -15,7 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import david.sceneapp.Activity.AddTriggerOptionActivity;
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.Model.SceneTriggerData;
 import david.sceneapp.R;
 import david.sceneapp.SceneStorageManager;
@@ -75,7 +75,8 @@ public class TriggerFragment extends ListFragment {
 //        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
 //                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
 
-        mAdapter = new ArrayAdapter<SceneTriggerData>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1 );
+        mAdapter = new ArrayAdapter<SceneTriggerData>(getActivity(),
+                android.R.layout.simple_list_item_1, android.R.id.text1 );
         setListAdapter(mAdapter);
         setHasOptionsMenu(true);
     }
@@ -103,7 +104,8 @@ public class TriggerFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
-                getActivity().startActivity(new Intent(getActivity(), AddTriggerOptionActivity.class));
+                getActivity().startActivity(new Intent(getActivity(),
+                        AddTriggerOptionActivity.class));
                 break;
         }
         return true;
@@ -187,7 +189,7 @@ public class TriggerFragment extends ListFragment {
                     //shareCurrentItem();
                     int pos = getListView().getCheckedItemPosition();
                     int id = mAdapter.getItem(pos).getId();
-                    LALALAService.currentInstance.deleteTrigger(id);
+                    SceneManageService.currentInstance.deleteTrigger(id);
                     updateTriggers();
                     mode.finish(); // Action picked, so close the CAB
                     return true;

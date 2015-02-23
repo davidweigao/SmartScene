@@ -1,6 +1,5 @@
 package david.sceneapp;
 
-import android.app.Application;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -37,46 +36,33 @@ import david.sceneapp.Model.WifiSceneTrigger;
 
 
 //TODO http://stackoverflow.com/questions/6896746/android-is-there-a-broadcast-action-for-volume-changes
-public class LALALAService extends NotificationListenerService {
-    public static LALALAService currentInstance;
-    public static final String ACTION_GET_NOTIFICATION = "david.notification";
-    public static final String KEY_NOTIF_PKG_NAME = "notification_packagename";
-    public static final String ACTION_CLICK_NOTIFICATION = "com.gaowei.notif";
-    public static final String ACTION_SCENE_IMPLEMENTED = "com.david.sceneImplemented";
-    public static final String ACTION_SCENES_UPDATED = "com.david.sceneUpdated";
-    public static final String ACTION_TRIGGERS_UPDATED = "com.david.triggerUpdated";
-    public static final String ACTION_EXCEPTIONS_UPDATED = "com.david.exceptionsUpdated";
-    public static final String EXTRA_SCENE_INDEX = "scene_index";
-    public  static final String EXTRA_FROM_TRIGGER = "from_trigger";
-    public  static final String EXTRA_SCENE_ID = "com.david.extraSceneId";
+public class SceneManageService extends NotificationListenerService {
+    private String TAG = this.getClass().getSimpleName();
+    public static SceneManageService currentInstance;
 
-    public static final int SCENE_CAPACITY = 4;
-    private RemoteViews remoteViews;
-    private static final int NOTIFICATION_ID = 100;
-    NotificationManager mNotificationManager;
-    private AudioManager audioManager;
+    public static final String KEY_NOTIF_PKG_NAME           = "notification_packagename";
+    public static final String ACTION_GET_NOTIFICATION      = "david.notification";
+    public static final String ACTION_CLICK_NOTIFICATION    = "com.gaowei.notif";
+    public static final String ACTION_SCENE_IMPLEMENTED     = "com.david.sceneImplemented";
+    public static final String ACTION_SCENES_UPDATED        = "com.david.sceneUpdated";
+    public static final String ACTION_TRIGGERS_UPDATED      = "com.david.triggerUpdated";
+    public static final String ACTION_EXCEPTIONS_UPDATED    = "com.david.exceptionsUpdated";
+    public static final String EXTRA_SCENE_INDEX            = "scene_index";
+    public static final String EXTRA_FROM_TRIGGER           = "from_trigger";
+    public static final String EXTRA_SCENE_ID               = "com.david.extraSceneId";
 
-
-    private ArrayList<Scene> scenes = new ArrayList<Scene>();
-    private Map<Integer, Scene> sceneMap = new LinkedHashMap<Integer, Scene>();
-
-    public ArrayList<Scene> getScenes() {
-        return scenes;
-    }
-
-    public Map<Integer, Scene> getSceneMap() {
-        return sceneMap;
-    }
-
-    private ArrayList<ExceptionScene> exceptions = new ArrayList<ExceptionScene>();
-
-    public ArrayList<ExceptionScene> getExceptions() {
-        return exceptions;
-    }
+    private static final int SCENE_CAPACITY     = 4;
+    private static final int NOTIFICATION_ID    = 100;
 
     public static Scene currentScene = null;
-    private Map<Integer, SceneTrigger> triggers = new LinkedHashMap<Integer, SceneTrigger>();
 
+    private RemoteViews remoteViews;
+    private NotificationManager mNotificationManager;
+    private AudioManager audioManager;
+    private ArrayList<Scene> scenes = new ArrayList<Scene>();
+    private Map<Integer, Scene> sceneMap = new LinkedHashMap<Integer, Scene>();
+    private ArrayList<ExceptionScene> exceptions = new ArrayList<ExceptionScene>();
+    private Map<Integer, SceneTrigger> triggers = new LinkedHashMap<Integer, SceneTrigger>();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -85,16 +71,26 @@ public class LALALAService extends NotificationListenerService {
                 int index = intent.getIntExtra(EXTRA_SCENE_INDEX, -1);
                 if (index > -1 && index < SCENE_CAPACITY) {
                     if (!intent.getBooleanExtra(EXTRA_FROM_TRIGGER, false))
-                        LALALAService.this.implementScene(scenes.get(index),false);
+                        SceneManageService.this.implementScene(scenes.get(index),false);
                 }
-            } else if (action.equals(ACTION_SCENE_IMPLEMENTED) || action.equals(ACTION_SCENES_UPDATED)) {
+            } else if (action.equals(ACTION_SCENE_IMPLEMENTED) ||
+                    action.equals(ACTION_SCENES_UPDATED)) {
                 addRemoteView();
             }
         }
     };
 
+    public Map<Integer, Scene> getSceneMap() {
+        return sceneMap;
+    }
 
-    private String TAG = this.getClass().getSimpleName();
+    public ArrayList<Scene> getScenes() {
+        return scenes;
+    }
+
+    public ArrayList<ExceptionScene> getExceptions() {
+        return exceptions;
+    }
 
     @Override
     public void onCreate() {
@@ -133,12 +129,14 @@ public class LALALAService extends NotificationListenerService {
         for (SceneTriggerData st : triggerDatas.values()) {
             switch (st.getTriggerType()) {
                 case SceneTriggerData.TYPE_WIFI_SWITCH:
-                    triggers.put(st.getId(), new WifiSceneTrigger(sceneMap.get(st.getSceneId()), this, st.getParameters()[0]));
+                    triggers.put(st.getId(), new WifiSceneTrigger(sceneMap.get(st.getSceneId()),
+                            this, st.getParameters()[0]));
                     break;
                 case SceneTriggerData.TYPE_NOTIFICATION:
                     Set<String> pkgs = new HashSet<String>();
                     pkgs.add(st.getParameters()[0]);
-                    triggers.put(st.getId(), new NotificationSceneTrigger(this, sceneMap.get(st.getSceneId()), pkgs));
+                    triggers.put(st.getId(), new NotificationSceneTrigger(this,
+                            sceneMap.get(st.getSceneId()), pkgs));
                     break;
             }
         }
@@ -193,19 +191,23 @@ public class LALALAService extends NotificationListenerService {
                 remoteViews.setCharSequence(buttonId, "setText", s.getName());
                 remoteViews.setInt(buttonId, "setWidth", width);
                 if (currentScene != null && s.getId() == (currentScene.getId())) {
-                    remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_red_dark);
+                    remoteViews.setInt(buttonId, "setBackgroundResource",
+                            android.R.color.holo_red_dark);
                 } else {
-                    remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_blue_bright);
+                    remoteViews.setInt(buttonId, "setBackgroundResource",
+                            android.R.color.holo_blue_bright);
                 }
                 Intent resultIntent = new Intent();
                 resultIntent.setAction(ACTION_CLICK_NOTIFICATION);
                 resultIntent.putExtra(EXTRA_SCENE_INDEX, i);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, s.getId(), resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(this, s.getId(),
+                        resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
                 remoteViews.setOnClickPendingIntent(buttonId, pendingIntent);
             } else {
                 int buttonId = getIdBySceneIndex(i);
                 remoteViews.setCharSequence(buttonId, "setText", "    ");
-                remoteViews.setInt(buttonId, "setBackgroundResource", android.R.color.holo_blue_bright);
+                remoteViews.setInt(buttonId, "setBackgroundResource",
+                        android.R.color.holo_blue_bright);
             }
 
         }
@@ -277,13 +279,17 @@ public class LALALAService extends NotificationListenerService {
             theFlag = AudioManager.FLAG_VIBRATE;
 
         if (scene.getAlarmVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_ALARM, scene.getAlarmVolume(), maxOne == alarm ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_ALARM, scene.getAlarmVolume(),
+                    maxOne == alarm ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getMusicVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_MUSIC, scene.getMusicVolume(), maxOne == music ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_MUSIC, scene.getMusicVolume(),
+                    maxOne == music ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getSystemVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_SYSTEM, scene.getSystemVolume(), maxOne == sys ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_SYSTEM, scene.getSystemVolume(),
+                    maxOne == sys ? theFlag : AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getVoiceCallVolume() != -1)
-            am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, scene.getVoiceCallVolume(), AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, scene.getVoiceCallVolume(),
+                    AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
         if (scene.getRingerMode() != -1) am.setRingerMode(scene.getRingerMode());
 
         currentScene = scene;
@@ -294,7 +300,8 @@ public class LALALAService extends NotificationListenerService {
 
             sendBroadcast(intent);
         }
-        Toast.makeText(LALALAService.currentInstance, scene.getName() + " mode on", Toast.LENGTH_SHORT).show();
+        Toast.makeText(SceneManageService.currentInstance,
+                scene.getName() + " mode on", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -310,7 +317,8 @@ public class LALALAService extends NotificationListenerService {
     public void implementException(ExceptionScene exp) {
         if(exp.getVolume() > 0) {
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,exp.getVolume(),AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+            audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,exp.getVolume(),
+                    AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
             Ringtone r = RingtoneManager.getRingtone(this, notification);
             r.setStreamType(AudioManager.STREAM_NOTIFICATION);
@@ -368,7 +376,8 @@ public class LALALAService extends NotificationListenerService {
     public void onNotificationPosted(StatusBarNotification sbn) {
 
         Log.i(TAG, "**********  onNotificationPosted");
-        Log.i(TAG, "ID :" + sbn.getId() + "\t" + sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
+        Log.i(TAG, "ID :" + sbn.getId() + "\t" +
+                sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
         Intent i = new Intent(ACTION_GET_NOTIFICATION);
         i.putExtra(KEY_NOTIF_PKG_NAME, sbn.getPackageName());
         sendBroadcast(i);
@@ -398,7 +407,8 @@ public class LALALAService extends NotificationListenerService {
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
         Log.i(TAG, "********** onNOtificationRemoved");
-        Log.i(TAG, "ID :" + sbn.getId() + "\t" + sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
+        Log.i(TAG, "ID :" + sbn.getId() + "\t" +
+                sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
 
     }
 

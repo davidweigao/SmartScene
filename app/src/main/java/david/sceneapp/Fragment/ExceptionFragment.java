@@ -18,7 +18,7 @@ import android.widget.ListView;
 import java.util.List;
 
 import david.sceneapp.Activity.AppListActivity;
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.Model.ExceptionScene;
 import david.sceneapp.R;
 
@@ -72,7 +72,8 @@ public class ExceptionFragment extends ListFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        mAdapter = new ArrayAdapter<ExceptionScene>(getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
+        mAdapter = new ArrayAdapter<ExceptionScene>(
+                getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
         setListAdapter(mAdapter);
 
         setHasOptionsMenu(true);
@@ -111,8 +112,8 @@ public class ExceptionFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(LALALAService.currentInstance != null) {
-            LALALAService.currentInstance.updateExceptions();
+        if(SceneManageService.currentInstance != null) {
+            SceneManageService.currentInstance.updateExceptions();
         }
     }
 
@@ -184,7 +185,7 @@ public class ExceptionFragment extends ListFragment {
                     //shareCurrentItem();
                     int pos = getListView().getCheckedItemPosition();
                     int id = mAdapter.getItem(pos).getId();
-                    LALALAService.currentInstance.deleteException(id);
+                    SceneManageService.currentInstance.deleteException(id);
                     getListView().setItemChecked(pos,false);
                     mode.finish(); // Action picked, so close the CAB
                     return true;

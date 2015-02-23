@@ -17,8 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
-import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.ToggleButton;
@@ -27,7 +25,7 @@ import android.widget.ToggleButton;
 import java.util.List;
 
 import david.sceneapp.Activity.AddSceneActivity;
-import david.sceneapp.LALALAService;
+import david.sceneapp.SceneManageService;
 import david.sceneapp.Model.Scene;
 import david.sceneapp.R;
 import david.sceneapp.SceneStorageManager;
@@ -76,8 +74,8 @@ public class SceneFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        IntentFilter filter = new IntentFilter(LALALAService.ACTION_SCENE_IMPLEMENTED);
-        filter.addAction(LALALAService.ACTION_SCENES_UPDATED);
+        IntentFilter filter = new IntentFilter(SceneManageService.ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(SceneManageService.ACTION_SCENES_UPDATED);
         getActivity().registerReceiver(receiver, filter);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -93,9 +91,9 @@ public class SceneFragment extends ListFragment {
             public View getView(int position, View convertView, ViewGroup parent) {
                 Log.d(TAG, "getView");
                 View v = super.getView(position, convertView, parent);
-                if (LALALAService.currentScene != null) {
+                if (SceneManageService.currentScene != null) {
                     int thisId = getItem(position).getId();
-                    int currentId = LALALAService.currentScene.getId();
+                    int currentId = SceneManageService.currentScene.getId();
                     Log.d(TAG, "this id : " + thisId + "  that id : " + currentId);
                     getListView().setItemChecked(position, thisId == currentId);
 //                    ((CheckedTextView)v).setChecked(thisId == currentId);
@@ -109,14 +107,15 @@ public class SceneFragment extends ListFragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_scene, null);
         wifiEnableButton = (ToggleButton) v.findViewById(R.id.toggleButton);
         wifiEnableButton.setChecked(SceneStorageManager.getWifiEnabled(getActivity()));
         wifiEnableButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LALALAService.currentInstance.toggleAllWifiSwitch(isChecked);
+                SceneManageService.currentInstance.toggleAllWifiSwitch(isChecked);
             }
         });
         return v;
@@ -194,8 +193,8 @@ public class SceneFragment extends ListFragment {
     BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if(intent.getAction().equals(LALALAService.ACTION_SCENE_IMPLEMENTED)) {
-                int id = intent.getIntExtra(LALALAService.EXTRA_SCENE_ID, -1);
+            if(intent.getAction().equals(SceneManageService.ACTION_SCENE_IMPLEMENTED)) {
+                int id = intent.getIntExtra(SceneManageService.EXTRA_SCENE_ID, -1);
                 if(id != -1) {
                     for(int i = 0 ; i < mAdapter.getCount(); i++) {
                         if(mAdapter.getItem(i).getId() == id) {
@@ -205,9 +204,9 @@ public class SceneFragment extends ListFragment {
                     }
                     mAdapter.notifyDataSetInvalidated();
                 }
-            } else if(intent.getAction().equals(LALALAService.ACTION_SCENES_UPDATED)) {
+            } else if(intent.getAction().equals(SceneManageService.ACTION_SCENES_UPDATED)) {
                 Log.d(TAG, "get Action Scenes update");
-                updateScene(LALALAService.currentInstance.getScenes());
+                updateScene(SceneManageService.currentInstance.getScenes());
             }
 
         }
@@ -215,10 +214,10 @@ public class SceneFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if(LALALAService.currentInstance != null)
-            LALALAService.currentInstance.updateScenes();
-        IntentFilter filter = new IntentFilter(LALALAService.ACTION_SCENE_IMPLEMENTED);
-        filter.addAction(LALALAService.ACTION_SCENES_UPDATED);
+        if(SceneManageService.currentInstance != null)
+            SceneManageService.currentInstance.updateScenes();
+        IntentFilter filter = new IntentFilter(SceneManageService.ACTION_SCENE_IMPLEMENTED);
+        filter.addAction(SceneManageService.ACTION_SCENES_UPDATED);
 
         getActivity().registerReceiver(receiver, filter);
     }
@@ -255,7 +254,7 @@ public class SceneFragment extends ListFragment {
                     //shareCurrentItem();
                     int pos = getListView().getCheckedItemPosition();
                     int id = mAdapter.getItem(pos).getId();
-                    LALALAService.currentInstance.deleteScene(id);
+                    SceneManageService.currentInstance.deleteScene(id);
                     getListView().setItemChecked(pos,false);
                     mode.finish(); // Action picked, so close the CAB
                     return true;

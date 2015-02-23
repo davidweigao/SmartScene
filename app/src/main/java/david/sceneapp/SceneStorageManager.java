@@ -187,7 +187,7 @@ public class SceneStorageManager {
 
     public void saveScene(Scene scene) {
         saveObject(scene,DATA_SCENE);
-        LALALAService.currentInstance.updateScenes();
+        SceneManageService.currentInstance.updateScenes();
     }
 
 
@@ -198,7 +198,7 @@ public class SceneStorageManager {
 
     public void saveTrigger(SceneTriggerData triggerData) {
         saveObject(triggerData, DATA_TRIGGER);
-        LALALAService.currentInstance.updateTriggers();
+        SceneManageService.currentInstance.updateTriggers();
     }
 
     public TreeMap<Integer, SceneTriggerData> getAllTrigger() {
@@ -211,12 +211,12 @@ public class SceneStorageManager {
 
     public void deleteScene(int id) {
         deleteObject(id, DATA_SCENE);
-        LALALAService.currentInstance.updateScenes();
+        SceneManageService.currentInstance.updateScenes();
     }
 
     public void deleteTrigger(int id) {
         deleteObject(id, DATA_TRIGGER);
-        LALALAService.currentInstance.updateTriggers();
+        SceneManageService.currentInstance.updateTriggers();
     }
 
     public void saveException(ExceptionScene exp) {
@@ -234,9 +234,11 @@ public class SceneStorageManager {
     }
 
     public static void setWifiEnabled(Context context, boolean enabled) {
-        PreferenceManager.getDefaultSharedPreferences(context).edit().putBoolean(KEY_WIFI_ENABLED, enabled).commit();
+        PreferenceManager.getDefaultSharedPreferences(
+                context).edit().putBoolean(KEY_WIFI_ENABLED, enabled).commit();
     }
     public static boolean getWifiEnabled(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context).getBoolean(KEY_WIFI_ENABLED, false);
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getBoolean(KEY_WIFI_ENABLED, false);
     }
 }

@@ -79,7 +79,8 @@ public class AddExceptionActivity extends Activity {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 if(b) {
-                    Vibrator v = (Vibrator) AddExceptionActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+                    Vibrator v = (Vibrator) AddExceptionActivity.this
+                            .getSystemService(Context.VIBRATOR_SERVICE);
                     v.vibrate(300);
                 }
             }
@@ -88,7 +89,8 @@ public class AddExceptionActivity extends Activity {
         okButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ExceptionScene es = new ExceptionScene(soundSeekBar.getProgress(), vibrateCheckBox.isChecked(), pkgName, senderET.getText().toString());
+                ExceptionScene es = new ExceptionScene(soundSeekBar.getProgress(),
+                        vibrateCheckBox.isChecked(), pkgName, senderET.getText().toString());
                 SceneStorageManager ssm = new SceneStorageManager(AddExceptionActivity.this);
                 ssm.saveException(es);
                 startActivity(new Intent(AddExceptionActivity.this, MainActivity.class));
