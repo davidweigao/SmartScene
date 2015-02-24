@@ -24,6 +24,9 @@ import android.widget.ToggleButton;
 
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnCheckedChanged;
 import david.sceneapp.Activity.AddSceneActivity;
 import david.sceneapp.SceneManageService;
 import david.sceneapp.Model.Scene;
@@ -52,7 +55,7 @@ public class SceneFragment extends ListFragment {
     private OnFragmentInteractionListener mListener;
     private ArrayAdapter<Scene> mAdapter;
     private ActionMode mActionMode;
-    private ToggleButton wifiEnableButton;
+    @InjectView(R.id.toggleButton) ToggleButton wifiEnableButton;
 
     // TODO: Rename and change types of parameters
     public static SceneFragment newInstance(String param1, String param2) {
@@ -83,8 +86,6 @@ public class SceneFragment extends ListFragment {
         }
 
         // TODO: Change Adapter to display your content
-        //setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-        //        android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
 
         mAdapter = new ArrayAdapter<Scene>(getActivity(), R.layout.list_item_scene, R.id.textView){
             @Override
@@ -96,7 +97,6 @@ public class SceneFragment extends ListFragment {
                     int currentId = SceneManageService.currentScene.getId();
                     Log.d(TAG, "this id : " + thisId + "  that id : " + currentId);
                     getListView().setItemChecked(position, thisId == currentId);
-//                    ((CheckedTextView)v).setChecked(thisId == currentId);
                 }
                 return v;
             }
@@ -110,17 +110,15 @@ public class SceneFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_scene, null);
-        wifiEnableButton = (ToggleButton) v.findViewById(R.id.toggleButton);
+        ButterKnife.inject(this, v);
         wifiEnableButton.setChecked(SceneStorageManager.getWifiEnabled(getActivity()));
-        wifiEnableButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SceneManageService.currentInstance.toggleAllWifiSwitch(isChecked);
-            }
-        });
         return v;
     }
 
+    @OnCheckedChanged(R.id.toggleButton)
+    public void toggleWifiSwitch(boolean isChecked) {
+        SceneManageService.currentInstance.toggleAllWifiSwitch(isChecked);
+    }
 
 
     @Override
@@ -138,7 +136,6 @@ public class SceneFragment extends ListFragment {
             mAdapter.clear();
             mAdapter.addAll(scenes);
             mAdapter.notifyDataSetChanged();
-
         }
     }
 

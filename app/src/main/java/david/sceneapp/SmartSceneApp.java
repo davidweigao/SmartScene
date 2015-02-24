@@ -1,4 +1,4 @@
-package david.sceneapp.Model;
+package david.sceneapp;
 
 import android.app.Application;
 import android.content.Intent;

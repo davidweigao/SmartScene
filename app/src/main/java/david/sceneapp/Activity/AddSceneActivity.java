@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 
+import butterknife.InjectView;
 import david.sceneapp.R;
 import david.sceneapp.Model.Scene;
 import david.sceneapp.SceneStorageManager;
@@ -17,23 +18,17 @@ import david.sceneapp.SceneStorageManager;
 public class AddSceneActivity extends Activity {
 
 
-    SeekBar mediaVolBar;
-    SeekBar sysVolBar;
-    SeekBar alarmVolBar;
-    SeekBar callVolBar;
-    Spinner ringerModeSpinner;
-    EditText sceneNameET;
+    @InjectView(R.id.mediaVolBar) SeekBar mediaVolBar;
+    @InjectView(R.id.sysVolBar) SeekBar sysVolBar;
+    @InjectView(R.id.alarmVolBar) SeekBar alarmVolBar;
+    @InjectView(R.id.callVolBar) SeekBar callVolBar;
+    @InjectView(R.id.ringerModeSpinner) Spinner ringerModeSpinner;
+    @InjectView(R.id.sceneNameET) EditText sceneNameET;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_scene);
-        mediaVolBar = (SeekBar) findViewById( R.id.mediaVolBar);
-        sysVolBar = (SeekBar) findViewById(R.id.sysVolBar);
-        alarmVolBar = (SeekBar) findViewById(R.id.alarmVolBar);
-        callVolBar = (SeekBar) findViewById(R.id.callVolBar);
-        ringerModeSpinner = (Spinner) findViewById(R.id.ringerModeSpinner);
-        sceneNameET = (EditText) findViewById(R.id.sceneNameET);
 
         AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         alarmVolBar.setMax(am.getStreamMaxVolume(AudioManager.STREAM_ALARM));

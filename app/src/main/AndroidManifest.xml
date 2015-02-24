@@ -12,7 +12,7 @@
         android:targetSdkVersion="20" />
 
     <application
-        android:name=".Model.SmartSceneApp"
+        android:name=".SmartSceneApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
@@ -37,14 +37,7 @@
             android:name=".Activity.AppListActivity"
             android:label="@string/title_activity_app_list" >
         </activity>
-        <activity
-            android:name=".Activity.SceneListActivity"
-            android:label="@string/title_activity_scene_list" >
-        </activity>
-        <activity
-            android:name=".Activity.TriggerListActivity"
-            android:label="@string/title_activity_wifi_trigger_list" >
-        </activity>
+
         <activity
             android:name=".Activity.AddTriggerOptionActivity"
             android:label="@string/title_activity_add_trigger_option" >

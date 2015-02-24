@@ -21,6 +21,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import david.sceneapp.Fragment.ExceptionFragment;
 import david.sceneapp.Fragment.SceneFragment;
 import david.sceneapp.Fragment.TriggerFragment;
@@ -33,7 +35,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
         ExceptionFragment.OnFragmentInteractionListener {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
+    @InjectView(R.id.pager) ViewPager mViewPager;
 
     private SceneFragment mSceneFragment = SceneFragment.newInstance("", "");
     private TriggerFragment mTriggerFragment = TriggerFragment.newInstance("", "");
@@ -63,6 +65,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
+        ButterKnife.inject(this);
 
         fragmentList.add(mSceneFragment);
         fragmentList.add(mTriggerFragment);
@@ -81,7 +84,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener,
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding

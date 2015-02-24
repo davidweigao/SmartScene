@@ -19,7 +19,6 @@ public class AddTriggerOptionActivity extends Activity implements View.OnClickLi
         findViewById(R.id.notificationTriggerBT).setOnClickListener(this);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
