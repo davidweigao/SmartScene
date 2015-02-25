@@ -39,21 +39,16 @@
         </activity>
 
         <activity
-            android:name=".Activity.AddTriggerOptionActivity"
-            android:label="@string/title_activity_add_trigger_option" >
+            android:name=".Activity.AddTriggerOptionActivity">
         </activity>
         <activity
-            android:name=".Activity.AddWifiTriggerActivity"
-            android:label="@string/title_activity_add_wifi_trigger"
-            android:launchMode="singleInstance" >
+            android:name=".Activity.AddWifiTriggerActivity" >
         </activity>
         <activity
-            android:name=".Activity.AddWifiTriggerActivity2"
-            android:label="@string/title_activity_add_wifi_trigger_activity2" >
+            android:name=".Activity.AddWifiTriggerActivity2">
         </activity>
         <activity
-            android:name=".Activity.AddSceneActivity"
-            android:label="@string/title_activity_add_scene" >
+            android:name=".Activity.AddSceneActivity" >
         </activity>
         <activity
             android:name=".Activity.MainActivity"

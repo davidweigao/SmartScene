@@ -2,7 +2,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="david.sceneapp.Activity.AddWifiTriggerActivity" >
     <item android:id="@+id/action_next"
-        android:title="next"
+        android:title="@string/ok"
+        android:icon="@drawable/ic_action_next_item"
         android:orderInCategory="100"
         android:showAsAction="always" />
 </menu>

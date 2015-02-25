@@ -17,11 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CompoundButton;
+import android.widget.CheckedTextView;
 import android.widget.ListView;
 import android.widget.ToggleButton;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -34,43 +35,20 @@ import david.sceneapp.R;
 import david.sceneapp.SceneStorageManager;
 
 
-/**
- * A fragment representing a list of Items.
- * <p />
- * <p />
- * interface.
- */
 public class SceneFragment extends ListFragment {
     public static final String TAG = SceneFragment.class.getSimpleName();
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-    private ArrayAdapter<Scene> mAdapter;
-    private ActionMode mActionMode;
     @InjectView(R.id.toggleButton) ToggleButton wifiEnableButton;
 
-    // TODO: Rename and change types of parameters
-    public static SceneFragment newInstance(String param1, String param2) {
+    private OnFragmentInteractionListener mListener;
+    private SceneAdapter mAdapter;
+    private ActionMode mActionMode;
+
+    public static SceneFragment newInstance() {
         SceneFragment fragment = new SceneFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public SceneFragment() {
     }
 
@@ -80,29 +58,45 @@ public class SceneFragment extends ListFragment {
         IntentFilter filter = new IntentFilter(SceneManageService.ACTION_SCENE_IMPLEMENTED);
         filter.addAction(SceneManageService.ACTION_SCENES_UPDATED);
         getActivity().registerReceiver(receiver, filter);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-        // TODO: Change Adapter to display your content
-
-        mAdapter = new ArrayAdapter<Scene>(getActivity(), R.layout.list_item_scene, R.id.textView){
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                Log.d(TAG, "getView");
-                View v = super.getView(position, convertView, parent);
-                if (SceneManageService.currentScene != null) {
-                    int thisId = getItem(position).getId();
-                    int currentId = SceneManageService.currentScene.getId();
-                    Log.d(TAG, "this id : " + thisId + "  that id : " + currentId);
-                    getListView().setItemChecked(position, thisId == currentId);
-                }
-                return v;
-            }
-        };
+        mAdapter = new SceneAdapter(getActivity(), R.layout.list_item_scene);
         setListAdapter(mAdapter);
         setHasOptionsMenu(true);
+    }
+
+    private static class SceneAdapter extends ArrayAdapter<Scene> {
+
+        LayoutInflater inflater ;
+        public SceneAdapter(Context context, int resource) {
+            super(context, resource);
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            SceneViewHolder holder;
+            if(convertView == null) {
+                convertView = inflater.inflate(R.layout.list_item_scene, parent, false);
+                holder = new SceneViewHolder(convertView);
+                convertView.setTag(holder);
+            }
+            holder = (SceneViewHolder)convertView.getTag();
+            holder.checkedTextView.setText(getItem(position).getName());
+            if(SceneManageService.currentScene != null) {
+                holder.checkedTextView.setChecked(
+                        getItem(position).getId() == SceneManageService.currentScene.getId());
+            } else {
+                holder.checkedTextView.setChecked(false);
+            }
+            return convertView;
+        }
+    }
+
+    public static class SceneViewHolder {
+        @InjectView(R.id.textView)
+        CheckedTextView checkedTextView;
+        public SceneViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 
 

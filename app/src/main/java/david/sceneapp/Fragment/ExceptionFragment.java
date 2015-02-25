@@ -30,29 +30,14 @@ import david.sceneapp.R;
  */
 public class ExceptionFragment extends ListFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
     private OnFragmentInteractionListener mListener;
-
     private ArrayAdapter<ExceptionScene> mAdapter;
-
     private ActionMode mActionMode;
 
 
     // TODO: Rename and change types of parameters
-    public static ExceptionFragment newInstance(String param1, String param2) {
+    public static ExceptionFragment newInstance() {
         ExceptionFragment fragment = new ExceptionFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -66,22 +51,12 @@ public class ExceptionFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
         mAdapter = new ArrayAdapter<ExceptionScene>(
                 getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
         setListAdapter(mAdapter);
-
         setHasOptionsMenu(true);
 
-
     }
-
-
 
     @Override
     public void onAttach(Activity activity) {

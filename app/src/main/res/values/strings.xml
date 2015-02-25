@@ -12,11 +12,6 @@
     <string name="title_activity_scene_list">SceneListActivity</string>
     <string name="enable_wifi_switch">Enable Wifi Switch</string>
     <string name="wifi_switch_edit">Wifi Switch Edit</string>
-    <string name="title_activity_wifi_trigger_list">WifiTriggerListActivity</string>
-    <string name="title_activity_add_trigger_option">AddTriggerOptionActivity</string>
-    <string name="title_activity_add_wifi_trigger">AddWifiTriggerActivity</string>
-    <string name="title_activity_add_wifi_trigger_activity2">AddWifiTriggerActivity2</string>
-    <string name="title_activity_add_scene">AddSceneActivity</string>
     <string name="ringer_mode_prompt">Choose ringer mode</string>
     <string name="title_section_scenes">Scenes</string>
     <string name="title_section_triggers">Triggers</string>

@@ -5,45 +5,65 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import david.sceneapp.R;
 
 public class AddWifiTriggerActivity extends Activity {
+    private static final String TAG = AddWifiTriggerActivity.class.getSimpleName();
 
-    EditText wifiNameET;
     public static final String EXTRA_WIFI_NAME = "com.david.wifi_name";
+
+    @InjectView(R.id.wifiNameET) EditText wifiNameET;
+    @InjectView(R.id.currentWifiBT) Button currentWifiButton;
+
+    private boolean isNextEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_wifi_trigger);
-        wifiNameET = (EditText) findViewById(R.id.wifiNameET);
-        findViewById(R.id.currentWifiBT).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-                wifiNameET.setText(wifiManager.getConnectionInfo().getSSID());
-            }
-        });
+        ButterKnife.inject(this);
     }
 
+    @OnClick(R.id.currentWifiBT)
+    public void setToCurrentWifi() {
+        WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifiNameET.setText(wifiManager.getConnectionInfo().getSSID());
+    }
+
+    @OnTextChanged(R.id.wifiNameET)
+    public void onWifiNameChanged(CharSequence s) {
+        boolean previousValue = isNextEnabled;
+        if(s.length() == 0) {
+            isNextEnabled = false;
+        } else {
+            isNextEnabled = true;
+        }
+        if(previousValue != isNextEnabled) {
+            invalidateOptionsMenu();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_wifi_trigger, menu);
+        if(isNextEnabled)
+            getMenuInflater().inflate(R.menu.add_wifi_trigger, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_next) {
             Intent intent = new Intent(this, AddWifiTriggerActivity2.class);
