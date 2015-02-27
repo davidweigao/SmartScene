@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class Scene implements SceneAppData, Serializable{
     public static final String TAG = Scene.class.getSimpleName();
-    private int id;
+    private int id = -1;
     private String name;
 
     private int alarmVolume = -1;

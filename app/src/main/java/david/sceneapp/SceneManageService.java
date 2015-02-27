@@ -12,9 +12,11 @@ import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Vibrator;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.StatusBarNotification;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -22,6 +24,8 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -61,7 +65,7 @@ public class SceneManageService extends NotificationListenerService {
     private AudioManager audioManager;
     private ArrayList<Scene> scenes = new ArrayList<Scene>();
     private Map<Integer, Scene> sceneMap = new LinkedHashMap<Integer, Scene>();
-    private ArrayList<ExceptionScene> exceptions = new ArrayList<ExceptionScene>();
+    private Map<Integer, ExceptionScene> exceptions = new HashMap<Integer, ExceptionScene>();
     private Map<Integer, SceneTrigger> triggers = new LinkedHashMap<Integer, SceneTrigger>();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -79,6 +83,7 @@ public class SceneManageService extends NotificationListenerService {
             }
         }
     };
+    private SceneStorageManager mSceneStorageManager;
 
     public Map<Integer, Scene> getSceneMap() {
         return sceneMap;
@@ -88,8 +93,8 @@ public class SceneManageService extends NotificationListenerService {
         return scenes;
     }
 
-    public ArrayList<ExceptionScene> getExceptions() {
-        return exceptions;
+    public Collection<ExceptionScene> getExceptions() {
+        return exceptions.values();
     }
 
     @Override
@@ -97,13 +102,12 @@ public class SceneManageService extends NotificationListenerService {
         super.onCreate();
         currentInstance = this;
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         updateScenes();
-
         updateTriggers();
         updateExceptions();
 
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         remoteViews = new RemoteViews(getPackageName(), R.layout.widget);
         addRemoteView();
 
@@ -120,6 +124,7 @@ public class SceneManageService extends NotificationListenerService {
                 break;
             }
         }
+        mSceneStorageManager = new SceneStorageManager(this);
     }
 
     void updateTriggers() {
@@ -163,9 +168,7 @@ public class SceneManageService extends NotificationListenerService {
 
     public void updateExceptions() {
         SceneStorageManager ssm = new SceneStorageManager(this);
-        exceptions.clear();
-        exceptions.addAll(ssm.getAllException());
-        for(ExceptionScene es : exceptions) es.setActivated(true);
+        exceptions = (ssm.getAllException());
         sendBroadcast(new Intent(ACTION_EXCEPTIONS_UPDATED));
     }
 
@@ -297,11 +300,10 @@ public class SceneManageService extends NotificationListenerService {
         if (!silent) {
             Intent intent = new Intent(ACTION_SCENE_IMPLEMENTED);
             intent.putExtra(EXTRA_SCENE_ID, scene.getId());
-
             sendBroadcast(intent);
         }
-        Toast.makeText(SceneManageService.currentInstance,
-                scene.getName() + " mode on", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(SceneManageService.currentInstance,
+//                scene.getName() + " mode on", Toast.LENGTH_SHORT).show();
 
     }
 
@@ -315,20 +317,49 @@ public class SceneManageService extends NotificationListenerService {
     }
 
     public void implementException(ExceptionScene exp) {
+        Ringtone r = null;
         if(exp.getVolume() > 0) {
             AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_NOTIFICATION,exp.getVolume(),
                     AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            Ringtone r = RingtoneManager.getRingtone(this, notification);
+            r = RingtoneManager.getRingtone(this, notification);
             r.setStreamType(AudioManager.STREAM_NOTIFICATION);
             r.play();
+
+
         }
-        else if(exp.isVibrate()) {
+        if(exp.isVibrate()) {
                 Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 v.vibrate(500);
         }
-        implementScene(currentScene,true);
+        if(r == null)
+            implementScene(currentScene,true);
+        else {
+            new AsyncTask<Ringtone, Void, Void>() {
+
+                @Override
+                protected Void doInBackground(Ringtone... params) {
+                    int i = 0;
+                    Ringtone rr = params[0];
+                    if(rr == null) return null;
+                    while(i < 5) {
+                        if(!rr.isPlaying()) {
+                            break;
+                        } else {
+                            i++;
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    implementScene(currentScene, true);
+                    return null;
+                }
+            }.execute(r);
+        }
     }
 
     @Override
@@ -374,8 +405,7 @@ public class SceneManageService extends NotificationListenerService {
 
     @Override
     public void onNotificationPosted(StatusBarNotification sbn) {
-
-        Log.i(TAG, "**********  onNotificationPosted");
+        Log.i(TAG, "onNotificationPosted");
         Log.i(TAG, "ID :" + sbn.getId() + "\t" +
                 sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
         Intent i = new Intent(ACTION_GET_NOTIFICATION);
@@ -384,21 +414,26 @@ public class SceneManageService extends NotificationListenerService {
 
         String pkg = sbn.getPackageName();
         String message = sbn.getNotification().tickerText.toString();
-        for(ExceptionScene es : exceptions) {
+        for(ExceptionScene es : exceptions.values()) {
             if(es.getPkgName().equals(pkg)) {
-                if(!es.isActivated()) {
+                Log.d(TAG, "notificaiton packagename is one of exception");
+                if (!es.isActivated()) {
+                    Log.d(TAG, "exception isn't activated");
                     return;
                 }
-                if(es.getParams().size() == 0) {
+                if (es.getParams().size() == 0) {
+                    Log.d(TAG, "exception is a wild cast, implent");
                     implementException(es);
                     return;
                 } else {
-                    for(String s : es.getParams()) {
-                        if(message.contains(s)) {
+                    for (String s : es.getParams()) {
+                        if (message.contains(s)) {
+                            Log.d(TAG, "exception implemented, parameter matches");
                             implementException(es);
                             return;
                         }
                     }
+                    Log.d(TAG, "exception is not implemented due to parameter not match");
                 }
             }
         }
@@ -406,7 +441,7 @@ public class SceneManageService extends NotificationListenerService {
 
     @Override
     public void onNotificationRemoved(StatusBarNotification sbn) {
-        Log.i(TAG, "********** onNOtificationRemoved");
+        Log.i(TAG, "onNotificationRemoved");
         Log.i(TAG, "ID :" + sbn.getId() + "\t" +
                 sbn.getNotification().tickerText + "\t" + sbn.getPackageName());
 
@@ -415,5 +450,10 @@ public class SceneManageService extends NotificationListenerService {
     public void deleteTrigger(int id) {
         SceneStorageManager ssm = new SceneStorageManager(this);
         ssm.deleteTrigger(id);
+    }
+
+    public void toggleExceptionScene(int id, boolean isActivated) {
+        exceptions.get(id).setActivated(isActivated);
+        mSceneStorageManager.saveException(exceptions.get(id));
     }
 }

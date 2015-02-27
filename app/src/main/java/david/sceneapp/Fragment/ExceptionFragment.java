@@ -1,23 +1,36 @@
 package david.sceneapp.Fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 
+import java.util.Collection;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnCheckedChanged;
 import david.sceneapp.Activity.AppListActivity;
+import david.sceneapp.Model.Scene;
 import david.sceneapp.SceneManageService;
 import david.sceneapp.Model.ExceptionScene;
 import david.sceneapp.R;
@@ -31,7 +44,7 @@ import david.sceneapp.R;
 public class ExceptionFragment extends ListFragment {
 
     private OnFragmentInteractionListener mListener;
-    private ArrayAdapter<ExceptionScene> mAdapter;
+    private ExceptionSceneAdapter mAdapter;
     private ActionMode mActionMode;
 
 
@@ -51,8 +64,7 @@ public class ExceptionFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAdapter = new ArrayAdapter<ExceptionScene>(
-                getActivity(), android.R.layout.simple_list_item_1, android.R.id.text1);
+        mAdapter = new ExceptionSceneAdapter(getActivity(), R.layout.list_item_exception);
         setListAdapter(mAdapter);
         setHasOptionsMenu(true);
 
@@ -75,7 +87,7 @@ public class ExceptionFragment extends ListFragment {
         mListener = null;
     }
 
-    public void updateException(List<ExceptionScene> exps) {
+    public void updateException(Collection<ExceptionScene> exps) {
         if(mAdapter != null) {
             mAdapter.clear();
             mAdapter.addAll(exps);
@@ -90,6 +102,7 @@ public class ExceptionFragment extends ListFragment {
         if(SceneManageService.currentInstance != null) {
             SceneManageService.currentInstance.updateExceptions();
         }
+        updateException(SceneManageService.currentInstance.getExceptions());
     }
 
     @Override
@@ -175,6 +188,63 @@ public class ExceptionFragment extends ListFragment {
             mActionMode = null;
         }
     };
+
+    public class ExceptionSceneAdapter extends ArrayAdapter<ExceptionScene> {
+
+        private LayoutInflater inflater;
+
+        public ExceptionSceneAdapter(Context context, int resource) {
+            super(context, resource);
+            inflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            if(convertView == null) {
+                convertView = inflater.inflate(R.layout.list_item_exception, parent, false);
+                convertView.setTag(new ExceptionSceneViewHolder(convertView));
+            }
+            ((ExceptionSceneViewHolder) convertView.getTag()).setExceptionScene(getItem(position));
+            return convertView;
+        }
+    }
+
+    public class ExceptionSceneViewHolder {
+        @InjectView(R.id.textView)
+        TextView textView;
+
+        @InjectView(R.id.icon)
+        ImageView icon;
+
+        @InjectView(R.id.checkbox)
+        CheckBox checkBox;
+
+        ExceptionScene exceptionScene;
+
+        public ExceptionSceneViewHolder(View view) {
+            ButterKnife.inject(this, view);
+            setExceptionScene(exceptionScene);
+        }
+
+        @OnCheckedChanged(R.id.checkbox)
+        public void onCheckedChanged(boolean isChecked) {
+            exceptionScene.setActivated(isChecked);
+            SceneManageService.currentInstance.toggleExceptionScene(exceptionScene.getId(), isChecked);
+        }
+
+        public void setExceptionScene(ExceptionScene exceptionScene) {
+            if(exceptionScene == null) return;
+            this.exceptionScene = exceptionScene;
+            textView.setText(exceptionScene.getName());
+            checkBox.setChecked(exceptionScene.isActivated());
+            try {
+                icon.setImageDrawable(ExceptionFragment.this.getActivity()
+                        .getPackageManager().getApplicationIcon(exceptionScene.getPkgName()));
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
 
     /**

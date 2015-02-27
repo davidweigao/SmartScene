@@ -12,7 +12,7 @@ public class SceneTriggerData implements SceneAppData, Serializable {
     public static final int TYPE_WIFI_SWITCH = 1;
     public static final int TYPE_NOTIFICATION = 2;
 
-    private int id;
+    private int id = -1;
 
     private int sceneId;
     private int triggerType;

@@ -23,6 +23,8 @@ public class AddExceptionActivity extends Activity {
 
     public static final String EXTRA_FROM_IM = "com.david.fromImApp";
     public static final String EXTRA_PACKAGE = "com.david.package";
+    public static final String EXTRA_NAME = "com.david.name";
+    public static final String EXTRA_ICON = "com.david.icon";
 
     SeekBar soundSeekBar;
     CheckBox vibrateCheckBox;
@@ -30,6 +32,8 @@ public class AddExceptionActivity extends Activity {
     Button okButton;
     boolean fromImApp;
     String pkgName;
+    String name;
+    int iconRes;
 
     AudioManager am;
 
@@ -41,6 +45,8 @@ public class AddExceptionActivity extends Activity {
         setContentView(R.layout.activity_add_exception);
         fromImApp = getIntent().getBooleanExtra(EXTRA_FROM_IM, false);
         pkgName = getIntent().getStringExtra(EXTRA_PACKAGE);
+        name = getIntent().getStringExtra(EXTRA_NAME);
+        iconRes = getIntent().getIntExtra(EXTRA_ICON, -1);
 
         if(!fromImApp) {
             findViewById(R.id.imAppOption).setVisibility(View.INVISIBLE);
@@ -90,14 +96,12 @@ public class AddExceptionActivity extends Activity {
             @Override
             public void onClick(View view) {
                 ExceptionScene es = new ExceptionScene(soundSeekBar.getProgress(),
-                        vibrateCheckBox.isChecked(), pkgName, senderET.getText().toString());
+                        vibrateCheckBox.isChecked(), pkgName, name, iconRes, senderET.getText().toString());
                 SceneStorageManager ssm = new SceneStorageManager(AddExceptionActivity.this);
                 ssm.saveException(es);
                 startActivity(new Intent(AddExceptionActivity.this, MainActivity.class));
             }
         });
-
-
     }
 
 

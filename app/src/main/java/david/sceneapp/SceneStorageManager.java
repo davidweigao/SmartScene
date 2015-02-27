@@ -127,24 +127,20 @@ public class SceneStorageManager {
 
     public void saveObject(SceneAppData data, int dataType) {
         Map map = getAllObject(dataType);
-        int maxId = sp.getInt(KEYS_MAXID[dataType], -1);
-        data.setId(++maxId);
-        sp.edit().putInt(KEYS_MAXID[dataType], maxId).commit();
+        if(!map.containsKey(data.getId())) {
+            int maxId = sp.getInt(KEYS_MAXID[dataType], -1);
+            data.setId(++maxId);
+            sp.edit().putInt(KEYS_MAXID[dataType], maxId).commit();
+        }
         map.put(data.getId(), data);
         String s = serializeMap(map);
         sp.edit().putString(KEYS_TREEMAP[dataType], s).commit();
     }
 
     public void deleteObject(int id, int dataType) {
-        Gson gson = new Gson();
-        String key = KEYS_TREEMAP[dataType];
-        String keyMaxId = KEYS_MAXID[dataType];
         Map map = getAllObject(dataType);
-
         map.remove(id);
         String s = serializeMap(map);
-
-        String newJsonString = new Gson().toJson(map);
         sp.edit().putString(KEYS_TREEMAP[dataType], s).commit();
 
     }
@@ -227,11 +223,12 @@ public class SceneStorageManager {
         deleteObject(id, DATA_EXCEPTION);
     }
 
-    public List<ExceptionScene> getAllException() {
+    public Map<Integer, ExceptionScene> getAllException() {
         Map map = (TreeMap<Integer, ExceptionScene>) getAllObject(DATA_EXCEPTION);
-        if(map == null) return new ArrayList<ExceptionScene>();
-        return new ArrayList<ExceptionScene>(map.values());
+        return map;
     }
+
+
 
     public static void setWifiEnabled(Context context, boolean enabled) {
         PreferenceManager.getDefaultSharedPreferences(

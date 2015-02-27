@@ -8,10 +8,12 @@ import java.util.List;
  * Created by david on 7/16/14.
  */
 public class ExceptionScene implements SceneAppData, Serializable {
-    private int id;
+    private int id = -1;
     private int volume;
     private boolean vibrate;
     private String pkgName;
+    private String name;
+    private int iconRes;
     private List<String> params;
     private boolean activated;
 
@@ -19,10 +21,12 @@ public class ExceptionScene implements SceneAppData, Serializable {
         this.activated = activated;
     }
 
-    public ExceptionScene(int vol, boolean vib, String pkg, String... param) {
+    public ExceptionScene(int vol, boolean vib, String pkg, String name, int iconRes, String... param) {
         volume = vol;
         vibrate = vib;
         pkgName = pkg;
+        this.name = name;
+        this.iconRes = iconRes;
         params = new ArrayList<String>(param.length);
         for(String s : param) {
             params.add(s);
@@ -33,10 +37,6 @@ public class ExceptionScene implements SceneAppData, Serializable {
     @Override
     public String toString() {
         return pkgName;
-
-
-
-
     }
 
 
@@ -82,5 +82,21 @@ public class ExceptionScene implements SceneAppData, Serializable {
 
     public void setParams(List<String> params) {
         this.params = params;
+    }
+
+    public int getIconRes() {
+        return iconRes;
+    }
+
+    public void setIconRes(int iconRes) {
+        this.iconRes = iconRes;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
